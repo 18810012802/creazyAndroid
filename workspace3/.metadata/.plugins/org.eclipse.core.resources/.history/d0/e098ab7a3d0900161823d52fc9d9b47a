@@ -1,0 +1,104 @@
+package com.example.helloworld;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import com.example.helloworld.R.color;
+
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
+import android.app.Activity;
+import android.app.ListActivity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.Chronometer.OnChronometerTickListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.QuickContactBadge;
+import android.widget.RadioGroup;
+import android.widget.SimpleAdapter;
+import android.widget.Switch;
+import android.widget.TextView;
+
+
+public class MainActivity extends Activity {
+	ListView myList;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        myList=(ListView)findViewById(R.id.mylist);
+        BaseAdapter adapter=new BaseAdapter(){
+
+			@Override
+			public int getCount() {
+				// TODO Auto-generated method stub
+				return 40;
+			}
+
+			@Override
+			public Object getItem(int position) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public long getItemId(int arg0) {
+				// TODO Auto-generated method stub
+				return arg0;
+			}
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				// TODO Auto-generated method stub
+				LinearLayout line=new LinearLayout(MainActivity.this);
+				line.setOrientation(0);
+				ImageView image=new ImageView(MainActivity.this);
+				image.setImageResource(R.drawable.ic_launcher);
+				TextView text=new TextView(MainActivity.this);
+				text.setText("第"+(position+1)+"个列表项");
+				text.setTextSize(20);
+				text.setTextColor(color.color1);
+				line.addView(image);
+				line.addView(text);
+				return line;
+				
+			}
+        	
+        };
+        myList.setAdapter(adapter);
+    }
+
+
+
+}

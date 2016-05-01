@@ -1,0 +1,5 @@
+package svg.jb.genemap.next.service;
+
+public class Breaker {
+
+}

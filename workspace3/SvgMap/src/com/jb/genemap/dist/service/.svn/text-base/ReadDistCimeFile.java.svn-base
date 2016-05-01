@@ -1,0 +1,134 @@
+package com.jb.genemap.dist.service;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.jb.genemap.dist.model.BranchTranAndPoleCime;
+import com.jb.genemap.dist.model.Substation;
+import com.jb.genemap.dist.model.TranAndPoleCime;
+import com.jb.genemap.next.service.utils.Tools;
+
+public class ReadDistCimeFile {
+	List<Substation> substationList = new ArrayList<Substation>();//厂站集合
+	
+	List<TranAndPoleCime> tranAndPoleCimeList = new ArrayList<TranAndPoleCime>();//主干线配变和杆塔数据集合
+	
+	List<BranchTranAndPoleCime> branchTranAndPoleCimeList = new ArrayList<BranchTranAndPoleCime>();//分支线配变和杆塔数据集合
+	
+	String[] dataLine;
+	
+	
+	public Map<String,Object> getDataMap(String readFileName,String lineName){
+		Map<String,Object> result = new HashMap<String,Object>();
+		ReadCIME(readFileName,lineName);
+		result.put("substationList", substationList);
+		result.put("tranAndPoleCimeList", tranAndPoleCimeList);
+		result.put("branchTranAndPoleCimeList", branchTranAndPoleCimeList);
+		return result;
+	}
+	
+	/**读取CIME文件数据
+	 * @param file
+	 * @param company
+	 */
+	private void ReadCIME(String file ,String lineName) {
+		String strLine = "";
+		try {
+			File fileEncode = new File(file);
+			String encode = "";
+			try{
+				encode = Tools.getFileEncode(fileEncode);
+			}catch(ArrayIndexOutOfBoundsException e){
+				e.printStackTrace();
+			}
+			FileInputStream fr = new FileInputStream(file);
+			InputStreamReader isr = new InputStreamReader(fr,encode);
+			BufferedReader br = new BufferedReader(isr);
+			int currentType = 0;
+			strLine = br.readLine();
+			while (strLine != null) {
+				if (strLine.equals("<Substation::"+lineName+">")) {
+					currentType = DistCimeType.SUBSTATION;
+				}else if (strLine.equals("<TranAndPole::"+lineName+">")) {
+					currentType = DistCimeType.TRANANDPOLE;
+				}else if (strLine.equals("<BranchTranAndPole::"+lineName+">")) {
+					currentType = DistCimeType.BRACHTRANANDPOLE;
+				}
+				
+				switch (currentType) {
+					case DistCimeType.SUBSTATION:
+						setSubstation(strLine);
+						break;
+					case DistCimeType.TRANANDPOLE:
+						setTranAndPoleCimeList(strLine);
+						break;
+					case DistCimeType.BRACHTRANANDPOLE:
+						setBranchTranAndPoleCimeList(strLine);
+						break;
+				}
+				strLine = br.readLine();
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private String[] splitString(String strdata){
+		strdata = dropBlank(strdata.replaceFirst("#", ""));
+		strdata = strdata.replaceAll("\\s{1,}", ",");
+		String[] str = strdata.split(",");
+		return str;
+	}
+	
+	private String dropBlank(String str){
+		str = str.replaceAll("^[ ]*", "").replaceAll("[ ]*$", "");
+		return str;
+	}
+	
+	private void setSubstation(String strdata){
+		if(strdata.contains("#"))
+		{
+			dataLine = splitString(strdata);
+			Substation substation = new Substation();
+			//序号   变电站id       变电站名称 
+			substation.setId(dataLine[1]);
+			substation.setName(dataLine[2]);
+			substationList.add(substation);
+		}
+	}
+	
+	private void setTranAndPoleCimeList(String strdata){
+		if(strdata.contains("#"))
+		{
+			dataLine = splitString(strdata);
+			TranAndPoleCime tranAndPoleCime = new TranAndPoleCime();
+			//序号    配变id           配变名称     杆塔id       杆塔名称
+			tranAndPoleCime.setTranId(dataLine[1]);
+			tranAndPoleCime.setTranName(dataLine[2]);
+			tranAndPoleCime.setPoleId(dataLine[3]);
+			tranAndPoleCime.setPoleName(dataLine[4]);
+			tranAndPoleCimeList.add(tranAndPoleCime);
+		}
+	}
+	
+	private void setBranchTranAndPoleCimeList(String strdata){
+		if(strdata.contains("#"))
+		{
+			dataLine = splitString(strdata);
+			BranchTranAndPoleCime brachTranAndPoleCime = new BranchTranAndPoleCime();
+			//序号    起点杆塔id           配变id                      配变名称       杆塔id	杆塔名称
+			brachTranAndPoleCime.setStartPole(dataLine[1]);
+			brachTranAndPoleCime.setTranId(dataLine[2]);
+			brachTranAndPoleCime.setTranName(dataLine[3]);
+			brachTranAndPoleCime.setPoleId(dataLine[4]);
+			brachTranAndPoleCime.setPoleName(dataLine[5]);
+			branchTranAndPoleCimeList.add(brachTranAndPoleCime);
+		}
+	}
+}

@@ -1,0 +1,4 @@
+driverStr=oracle.jdbc.driver.OracleDriver
+url=jdbc:oracle:thin:@192.168.0.254:1521:orcl
+userName=sh_loss
+passWord=sh_loss

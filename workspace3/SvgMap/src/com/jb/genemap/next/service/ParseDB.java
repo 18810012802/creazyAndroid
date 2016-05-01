@@ -1,0 +1,210 @@
+package com.jb.genemap.next.service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.flowCal.device.model.main.ACLineDot;
+import com.flowCal.device.model.main.Breaker;
+import com.flowCal.device.model.main.BusbarSection;
+import com.flowCal.device.model.main.Disconnector;
+import com.flowCal.device.model.main.PowerTransformer;
+import com.flowCal.device.model.main.TransformerWinding;
+import com.jb.genemap.next.service.utils.JdbcDao;
+
+/**
+ * 从数据库获取svg图形拓扑信息类（一个站）
+ * @author yjl
+ *
+ */
+public class ParseDB implements IParse{
+	public ParseDB(String subsId){
+		this.subsId=subsId;
+	}
+	private String subsId;
+	private JdbcDao jdbcDao = new JdbcDao();
+//	private String orgId = "85df8d06-8054-4d94-a8d9-9c24df701d29";
+//	private String subsId = "a4cef88c-004a-48c3-b4a7-cd865e512381";
+	
+	/**
+	 * 根据厂站名称获取厂站信息
+	 * @return
+	 */
+	public static Map<String,String> getSubMsgByName(String subName){
+		Map<String,String> result = new HashMap<String, String>();
+		JdbcDao jdbcDao = new JdbcDao();
+		String sql = "SELECT T.SUBS_ID,T.SUBS_NAME FROM LOSS_ARCH_EQUIP_SUBS T WHERE T.SUBS_NAME like '%"+subName+"%'";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for(Map<String, String> map : list){
+			String id = map.get("SUBS_ID");
+			String name = map.get("SUBS_NAME");
+			result.put(id,name);
+		}
+		return result;
+	}
+	
+	/**
+	 * 从cim文件获取主变信息
+	 * @return
+	 */
+	public List<PowerTransformer> getTranMap(){
+		List<PowerTransformer> result = new ArrayList<PowerTransformer>();
+		String sql = "SELECT T.TRAN_ID ID, T.TRAN_NAME NAME FROM LOSS_ARCH_EQUIP_TRAN T WHERE T.SUBS_ID = '"+subsId+"' AND T.TRAN_TYPE='01'";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		String transWindSql = "SELECT T.TRAN_ID,T.TW_TYPE,T1.T_CONN_ID FROM LOSS_ARCH_EQUIP_TRANSWIND T, LOSS_ARCH_TOPO_TERMINAL T1" +
+				" WHERE T.OBJ_ID = T1.T_DEVICE_ID AND T.TRAN_ID IN(SELECT T.TRAN_ID FROM LOSS_ARCH_EQUIP_TRAN T WHERE T.SUBS_ID = '"+subsId+"' AND T.TRAN_TYPE='01')";
+		List<Map<String, String>> twList = jdbcDao.queryBySql(transWindSql);
+		Map<String,Map<String,TransformerWinding>> twMap = new HashMap<String,Map<String,TransformerWinding>>();
+		for(Map<String, String> map : twList){
+			String id = map.get("TRAN_ID");
+			String type = map.get("TW_TYPE");
+			String connId = map.get("T_CONN_ID");
+			TransformerWinding tw = new TransformerWinding();
+			tw.setPhysicNodeBegin(connId);
+			Map<String,TransformerWinding> tranWMap = new HashMap<String,TransformerWinding>();;
+			if(!twMap.containsKey(id)){
+				tranWMap = new HashMap<String, TransformerWinding>();
+			}else{
+				tranWMap = twMap.get(id);
+				
+			}
+			tranWMap.put(type, tw);
+			twMap.put(id, tranWMap);
+		}
+		for(Map<String, String> map : list){
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			PowerTransformer po = new PowerTransformer();
+			po.setMRID(id);
+			po.setName(name);
+			po.getTransformerWindingMap().putAll(twMap.get(id));
+			result.add(po);
+		}
+		return result;
+	}
+	
+	/**
+	 * 从数据库获取开关信息
+	 * @return
+	 */
+	public List<Breaker> getBreakerMap(){
+		List<Breaker> result = new ArrayList<Breaker>();
+		String sql = "SELECT T.SWITCH_ID ID,T.SWITCH_NAME NAME,T.SWITCH_SORT_TYPE TYPE,WM_CONCAT(T1.T_CONN_ID) CONNMSG FROM LOSS_ARCH_EQUIP_SWITCH T,LOSS_ARCH_TOPO_TERMINAL T1" +
+				" WHERE T.SWITCH_ID=T1.T_DEVICE_ID AND T.SUBS_ID = '"+subsId+"' AND T.SWITCH_SORT_TYPE IN('1205015','1205019')" +
+				" GROUP BY T.SWITCH_ID,T.SWITCH_NAME,T.SWITCH_SORT_TYPE";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for(Map<String, String> map : list){
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			String type = map.get("TYPE");
+			String connMsg = map.get("CONNMSG");
+			String[] conns = null;
+			if(connMsg!=null && connMsg.trim().length()!=0){
+				conns = connMsg.split(",");
+			}
+			Breaker po = new Breaker();
+			po.setMRID(id);
+			po.setName(name);
+			po.setType(type);
+			po.setPhysicNodeBegin(conns[0]);
+			if(conns.length==2){
+				po.setPhysicNodeEnd(conns[1]);
+			}
+			result.add(po);
+		}
+		return result;
+	}
+	
+	/**
+	 * 从数据库获取刀闸信息
+	 * @return
+	 */
+	public List<Disconnector> getDisconnectorMap(){
+		List<Disconnector> result = new ArrayList<Disconnector>();
+		String sql = "SELECT T.SWITCH_ID ID,T.SWITCH_NAME NAME,T.SWITCH_SORT_TYPE TYPE,WM_CONCAT(T1.T_CONN_ID) CONNMSG FROM LOSS_ARCH_EQUIP_SWITCH T,LOSS_ARCH_TOPO_TERMINAL T1" +
+				" WHERE T.SWITCH_ID=T1.T_DEVICE_ID AND T.SUBS_ID = '"+subsId+"' AND T.SWITCH_SORT_TYPE IN('1205016', '1205017')" +
+				" GROUP BY T.SWITCH_ID,T.SWITCH_NAME,T.SWITCH_SORT_TYPE";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for(Map<String, String> map : list){
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			String type = map.get("TYPE");
+			String connMsg = map.get("CONNMSG");
+			String[] conns = null;
+			if(connMsg!=null && connMsg.trim().length()!=0){
+				conns = connMsg.split(",");
+			}
+			Disconnector po = new Disconnector();
+			po.setMRID(id);
+			po.setName(name);
+			po.setType(type);
+			po.setPhysicNodeBegin(conns[0]);
+			if(conns.length==2){
+				po.setPhysicNodeEnd(conns[1]);
+			}
+			result.add(po);
+		}
+		return result;
+	}
+	
+	/**
+	 * 从数据库获取母线信息
+	 * @return
+	 */
+	public List<BusbarSection> getBusMap(){
+		List<BusbarSection> result = new ArrayList<BusbarSection>();
+		String sql = "SELECT T.BUSLINE_ID ID,T.BUSLINE_NAME NAME,T.VOLT_LEVEL,T1.T_CONN_ID CONNMSG FROM LOSS_ARCH_EQUIP_BUSLINE T,LOSS_ARCH_TOPO_TERMINAL T1" +
+				" WHERE T.BUSLINE_ID=T1.T_DEVICE_ID AND T.SUBS_ID = '"+subsId+"'";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for(Map<String, String> map : list){
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			String voltLevel = map.get("VOLT_LEVEL");
+			String connMsg = map.get("CONNMSG");
+			BusbarSection po = new BusbarSection();
+			po.setMRID(id);
+			po.setName(name);
+			po.setVoltageLevel(voltLevel);
+			po.setPhysicNodeBegin(connMsg);
+			result.add(po);
+		}
+		return result;
+	}
+	
+	/**
+	 * 从数据库获取线路信息
+	 * @return
+	 */
+	public List<ACLineDot> getLineMap(){
+		List<ACLineDot> result = new ArrayList<ACLineDot>();
+		String sql = "SELECT T.LINE_ID ID, T.LINE_NAME NAME,T1.T_CONN_ID CONNMSG FROM LOSS_ARCH_EQUIP_LINE T, LOSS_ARCH_TOPO_TERMINAL T1" +
+				" WHERE T.LINE_ID = T1.T_DEVICE_ID AND (T.START_SUBS_ID = '"+subsId+"' OR T.END_SUBS_ID = '"+subsId+"')";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for(Map<String, String> map : list){
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			String connMsg = map.get("CONNMSG");
+			String[] conns = null;
+			if(connMsg!=null && connMsg.trim().length()!=0){
+				conns = connMsg.split(",");
+			}
+			for(int i=0;i<conns.length;i++){
+				ACLineDot po = new ACLineDot();
+				if(i==0){
+					po.setMRID(id+"1");
+					po.setName(name+"首端");
+					po.setPhysicNodeBegin(conns[0]);
+					result.add(po);
+				}else{
+					po.setMRID(id+"2");
+					po.setName(name+"末端");
+					po.setPhysicNodeBegin(conns[0]);
+					result.add(po);
+				}
+			}
+			
+		}
+		return result;
+	}
+}

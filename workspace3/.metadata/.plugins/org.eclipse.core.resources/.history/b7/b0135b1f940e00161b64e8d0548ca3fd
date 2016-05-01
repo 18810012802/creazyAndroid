@@ -1,0 +1,14 @@
+eclipse.preferences.version=1
+encoding//src/svg/jb/genemap/dist/view/Main.java=UTF-8
+encoding//src/svg/jb/genemap/next/model/ElementType.java=UTF-8
+encoding//src/svg/jb/genemap/next/model/deviceTypes/BusLineInfo.java=UTF-8
+encoding//src/svg/jb/genemap/next/model/deviceTypes/DeviceInfo.java=UTF-8
+encoding//src/svg/jb/genemap/next/model/deviceTypes/LineInfo.java=UTF-8
+encoding//src/svg/jb/genemap/next/service/DeviceInfoList.java=UTF-8
+encoding//src/svg/jb/genemap/next/service/IParse.java=UTF-8
+encoding//src/svg/jb/genemap/next/service/ParseCime.java=UTF-8
+encoding//src/svg/jb/genemap/next/service/ParseDB.java=UTF-8
+encoding//src/svg/jb/genemap/next/service/utils/ReadFromCime.java=UTF-8
+encoding//src/svg/jb/genemap/next/service/utils/Tools.java=UTF-8
+encoding//src/svg/jb/genemap/next/service/utils/WriteToCime.java=UTF-8
+encoding//src/svg/jb/genemap/next/view/Main.java=UTF-8

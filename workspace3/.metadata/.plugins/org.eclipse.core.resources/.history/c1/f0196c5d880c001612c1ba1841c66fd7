@@ -1,0 +1,101 @@
+package com.example.helloworld;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.ContextMenu;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.SubMenu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
+import android.widget.SearchView;
+import android.widget.Toast;
+
+
+public class MainActivity extends Activity{
+	final int FONT_10=0X111;
+	final int FONT_12=0X112;
+	final int FONT_14=0X113;
+	final int FONT_16=0X114;
+	final int FONT_18=0X115;
+	 
+	final int PLAIN_ITEM=0X11b;
+	
+	final int FONT_RED=0X116;
+	final int FONT_BLUE=0X117;
+	final int FONT_GREEN=0X118;
+	
+	final int MENU1=0X126;
+	final int MENU2=0X127;
+	final int MENU3=0X128;
+	PopupMenu popup=null;
+	private EditText edit;
+	private Button btn;
+	@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        edit=(EditText)findViewById(R.id.txt);
+        edit=(EditText)findViewById(R.id.txt);
+        btn=(Button)findViewById(R.id.bn);
+        registerForContextMenu(btn);
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu){
+		SubMenu fontMenu=menu.addSubMenu("字体大小");
+		fontMenu.setIcon(R.drawable.aa);
+		fontMenu.setHeaderIcon(R.drawable.bb);
+		fontMenu.setHeaderTitle("选择字体大小");
+		fontMenu.add(0,FONT_10,0,"10号字体");
+		fontMenu.add(0,FONT_12,0,"12号字体");
+		fontMenu.add(0,FONT_14,0,"14号字体");
+		fontMenu.add(0,FONT_16,0,"16号字体");
+		fontMenu.add(0,FONT_18,0,"18号字体");
+		menu.add(0,PLAIN_ITEM,0,"普通菜单项");
+		SubMenu colorMenu=menu.addSubMenu("字体颜色");
+		colorMenu.add(0,FONT_RED,0,"红色");
+		colorMenu.add(0,FONT_BLUE,0,"蓝色");
+		colorMenu.add(0,FONT_GREEN,0,"绿色");
+		return super.onCreateOptionsMenu(menu);
+	}
+	@Override
+	public void onCreateContextMenu(ContextMenu menu,View source,ContextMenu.ContextMenuInfo menuInfo){
+		menu.add(0,MENU1,0,"红色");
+		menu.add(0,MENU2,0,"绿色");
+		menu.add(0,MENU3,0,"蓝色");
+		menu.setGroupCheckable(0,true,true);
+		menu.setHeaderIcon(R.drawable.cc);
+		menu.setHeaderTitle("选择背景色");
+	}
+	public void onPopupButtonClick(View button){
+		popup=new PopupMenu(this,button);
+		getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+		popup.setOnMenuItemClickListener(
+				new PopupMenu.OnMenuItemClickListener() {
+					
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						// TODO Auto-generated method stub
+						switch(item.getItemId()){
+						case R.id.exit:
+							popup.dismiss();
+							break;
+						default:
+							Toast.makeText(MainActivity.this, item.getTitle(),Toast.LENGTH_SHORT).show();
+						}
+						return true;
+					}
+				});
+		popup.show();
+	}
+
+}

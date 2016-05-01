@@ -1,0 +1,16 @@
+package svg.jb.genemap.dist.view;
+
+import svg.jb.genemap.dist.service.DistDBToCime;
+
+public class GenerateCimeMain {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		DistDBToCime d = new DistDBToCime("407707999");
+		d.distLineData2CIME("c://1.cime", "涓婃毊S220绾�", "鐢电綉妯″瀷", "2015-04-15");
+	}
+
+}

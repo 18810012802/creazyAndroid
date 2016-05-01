@@ -1,0 +1,719 @@
+package svg.jb.genemap.next.service.utils;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import svg.flowCal.device.model.main.ACLineDot;
+import svg.flowCal.device.model.main.Breaker;
+import svg.flowCal.device.model.main.BusbarSection;
+import svg.flowCal.device.model.main.Disconnector;
+import svg.flowCal.device.model.main.PowerTransformer;
+import svg.flowCal.device.model.main.Substation;
+import svg.flowCal.device.model.main.TransformerWinding;
+import svg.jb.genemap.next.service.utils.JdbcDao;
+
+/**
+ * 浠庢暟鎹簱鑾峰彇鐨勬暟鎹浆涓篶ime鏂囦欢
+ * 
+ * @author yjl
+ * 
+ */
+public class WriteToCime {
+	List<Substation> SubstationList = new ArrayList<Substation>();
+	List<PowerTransformer> PowerTransformerList = new ArrayList<PowerTransformer>();
+	List<TransformerWinding> TransformerWindingList = new ArrayList<TransformerWinding>();
+	List<Breaker> BreakerList = new ArrayList<Breaker>();
+	List<Disconnector> DisconnectorList = new ArrayList<Disconnector>();
+	List<BusbarSection> BusbarSectionlist = new ArrayList<BusbarSection>();
+	List<ACLineDot> ACLineDotList = new ArrayList<ACLineDot>();
+
+	public WriteToCime(String subsId) {
+		this.subsId = subsId;
+		setSubstationList();
+		setTranList();
+		setBreakerList();
+		setDisconnectorList();
+		setBusList();
+		setLineList();
+	}
+
+	private String subsId;
+	private JdbcDao jdbcDao = new JdbcDao();
+
+	// private String orgId = "85df8d06-8054-4d94-a8d9-9c24df701d29";
+	// private String subsId = "a4cef88c-004a-48c3-b4a7-cd865e512381";
+
+	public void mainSubsData2CIME(String fileName) {
+
+		File file = new File(fileName);
+		FileWriter writer = null;
+		int index = 1;// 搴忓彿
+		if (!file.getParentFile().exists()) {
+			file.getParentFile().mkdirs();
+		}
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+				// System.out.println(fileName + "鏂囨湰鏂囦欢鍒涘缓鎴愬姛");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			// 鎵撳紑涓�涓啓鏂囦欢鍣紝鏋勯�犲嚱鏁颁腑鐨勭浜屼釜鍙傛暟true琛ㄧず浠ヨ拷鍔犲舰寮忓啓鏂囦欢
+			writer = new FileWriter(fileName);
+			// 棰樼洰<!Entity=娉夊窞 type=鐢电綉妯″瀷 time='2014-03-13T02:00:12'!>
+			String txt = "<!Entity=SQ type=鐢电綉妯″瀷    time='" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss") + "'!>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<ControlArea::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	Parent	p	q	area_type";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	鏈尯鍩熷悕	鐖跺尯鍩熸爣璇�	鎬绘湁鍔�	鎬绘棤鍔�	鍖哄煙绫诲瀷 ";
+			writer.write(txt + "\r\n");
+			txt = "</ControlArea::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<BaseVoltage::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	nomkV";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	鍩哄噯鐢靛帇鍚�	鍩哄噯鐢靛帇";
+			writer.write(txt + "\r\n");
+			txt = "</BaseVoltage::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<Substation::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	type	ControlArea	p	q	x	y	i_flag	mGdis_flag	mUnXf_flag";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫巶绔欏叏鍚�	鍘傜珯绫诲瀷	鎵�灞炲尯鍩熸爣璇�	鎬绘湁鍔�	鎬绘棤鍔�	鍘傜珯缁忓害	鍘傜珯绾害	鐢垫祦閲忔祴鏍囪瘑	鍦板垁閲忔祴鏍囪瘑	鏈虹粍鍙樺帇鍣ㄩ噺娴嬫爣璇�";
+			writer.write(txt + "\r\n");
+			for (Substation s : SubstationList) {
+				txt = "#	" + (index++) + "    "
+						+ s.getMRID() + "    "
+						+ s.getName() + "    "
+						+ s.getName() + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null";
+				writer.write(txt + "\r\n");
+			}
+			txt = "</Substation::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<VoltageLevel::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	highkV	lowkV	Substation	BaseVoltage	type";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勭數鍘嬬瓑绾у叏鍚�	鐢靛帇涓婇檺	鐢靛帇涓嬮檺	鎵�灞炲巶绔欐爣璇�	鍩哄噯鐢靛帇鏍囪瘑	缁撶嚎绫诲瀷";
+			writer.write(txt + "\r\n");
+			txt = "</VoltageLevel::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<Bay::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	Substation	VoltageLevel	type";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鎵�灞炲巶绔欐爣璇�	鎵�灞炵數鍘嬬瓑绾ф爣璇�	缁撶嚎绫诲瀷";
+			writer.write(txt + "\r\n");
+			txt = "</Bay::SQ>";
+			writer.write(txt + "\r\n");
+
+			/**
+			 * 寮�鍏�<Breaker::姘稿拰搴勭珯></Breaker::姘稿拰搴勭珯>
+			 */
+			index = 1;
+			// txt = "//鍦板尯";
+			// writer.write(txt + "\r\n");
+			txt = "<Breaker::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	type	I_node	J_node	Substation	BaseVoltage	VoltageLevel	mvarating	status	pnt_qual";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鏂矾鍣ㄧ被鍨�	鐗╃悊杩炴帴鑺傜偣鍙�	鐗╃悊杩炴帴鑺傜偣鍙�	鎵�灞炲巶绔欐爣璇�	鍩哄噯鐢靛帇鏍囪瘑	鎵�灞炵數鍘嬬瓑绾ф爣璇�	閬柇瀹归噺	鐘舵��	閬ヤ俊璐ㄩ噺";
+			writer.write(txt + "\r\n");
+			for (Breaker b : BreakerList) {
+				txt = "#	" + (index++) + "    "
+						+ b.getMRID() + "    "
+						+ b.getName() + "    "
+						+ b.getName() + "    "
+						+ "null" + "    "
+						+ b.getPhysicNodeBegin() + "    "
+						+ b.getPhysicNodeEnd() + "    "
+						+ subsId + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null";
+				writer.write(txt + "\r\n");
+			}
+			txt = "</Breaker::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			// txt = "//鍦板尯";
+			// writer.write(txt + "\r\n");
+			txt = "<Disconnector::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	I_node	J_node	Substation	BaseVoltage	VoltageLevel	status	pnt_qual";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鐗╃悊杩炴帴鑺傜偣鍙�	鐗╃悊杩炴帴鑺傜偣鍙�	鎵�灞炲巶绔欐爣璇�	鍩哄噯鐢靛帇鏍囪瘑	鎵�灞炵數鍘嬬瓑绾ф爣璇�	鐘舵��	閬ヤ俊璐ㄩ噺";
+			writer.write(txt + "\r\n");
+			for (Disconnector  d: DisconnectorList) {
+				txt = "#	" + (index++) + "    "
+						+ d.getMRID() + "    "
+						+ d.getName() + "    "
+						+ d.getName() + "    "
+						+ d.getPhysicNodeBegin() + "    "
+						+ d.getPhysicNodeEnd() + "    "
+						+ subsId + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null";;
+				writer.write(txt + "\r\n");
+			}
+			txt = "</Disconnector::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<GroundDisconnector::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	type	I_node	Substation	BaseVoltage	VoltageLevel	status	pnt_qual";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鍦板垁绫诲瀷	鐗╃悊杩炴帴鑺傜偣鍙�	鎵�灞炲巶绔欐爣璇�	鍩哄噯鐢靛帇鏍囪瘑	鎵�灞炵數鍘嬬瓑绾ф爣璇�	鐘舵��	閬ヤ俊璐ㄩ噺";
+			writer.write(txt + "\r\n");
+			txt = "</GroundDisconnector::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<BusbarSection::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	I_node	Substation	BaseVoltage	VoltageLevel	Location	V	v_qual	A	ang_qual	maxV	minV";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鍘熸爣璇�	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	姣嶇嚎鑺傜偣鍙�	鎵�灞炲巶绔欐爣璇�	鍩哄噯鐢靛帇鏍囪瘑	鎵�灞炵數鍘嬬瓑绾ф爣璇�	浣嶇疆淇℃伅	鐢靛帇閲忔祴	绾跨數鍘嬭川閲忕爜	鐩歌閲忔祴	鐩歌璐ㄩ噺鐮�	鐢靛帇涓婇檺	鐢靛帇涓嬮檺";
+			writer.write(txt + "\r\n");
+			for (BusbarSection  b: BusbarSectionlist) {
+				txt = "#	" + (index++) + "    "
+						+ b.getMRID() + "    "
+						+ b.getName() + "    "
+						+ b.getName() + "    "
+						+ b.getPhysicNodeBegin() + "    "
+						+ subsId + "    "
+						+ b.getVoltageLevel() + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null";
+				writer.write(txt + "\r\n");
+			}
+			txt = "</BusbarSection::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<ACLine::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	aclnNum";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鍖呭惈浜ゆ祦绾挎鏁�";
+			writer.write(txt + "\r\n");
+			txt = "</ACLine::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<ACLineSegment::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	StartSt	EndSt	ratedMW	ratedCurrent	BaseVoltage	r	x	bch	r0	x0	b0ch	ACLine";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	棣栫鍘傜珯鏍囪瘑	鏈鍘傜珯鏍囪瘑	鍔熺巼闄愬��	鍏佽杞芥祦閲�	鍩哄噯鐢靛帇鏍囪瘑	姝ｅ簭鐢甸樆	姝ｅ簭鐢垫姉	姝ｅ簭鐢电撼	闆跺簭鐢甸樆	闆跺簭鐢垫姉	闆跺簭鐢电撼	鎵�灞炵嚎璺爣璇�";
+			writer.write(txt + "\r\n");
+			txt = "</ACLineSegment::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			// txt = "//鍦板尯";
+			// writer.write(txt + "\r\n");
+			txt = "<ACLineDot::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	ACLineSegment	Substation	I_node	BaseVoltage	VoltageLevel	P	p_qual	Q	q_qual";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	浜ゆ祦绾挎鏍囪瘑	鍘傜珯鏍囪瘑	鐗╃悊杩炴帴鑺傜偣	鍩哄噯鐢靛帇鏍囪瘑	鐢靛帇绛夌骇鏍囪瘑	鏈夊姛閲忔祴	鏈夊姛璐ㄩ噺鐮�	鏃犲姛閲忔祴	鏃犲姛璐ㄩ噺鐮�";
+			writer.write(txt + "\r\n");
+			for (ACLineDot  a: ACLineDotList) {
+				txt = "#	" + (index++) + "    "
+						+ a.getMRID() + "    "
+						+ a.getName() + "    "
+						+ a.getName() + "    "
+						+ a.getAclineSegment() + "    "
+						+ subsId + "    "
+						+ a.getPhysicNodeBegin() + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null" + "    "
+						+ "null";
+				writer.write(txt + "\r\n");
+			}
+			txt = "</ACLineDot::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<TapChangerType::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	neutralStep	neutralKV	highStep	lowStep	stepVolIncre	D";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	鍒嗘帴澶寸被鍨嬪悕	棰濆畾妗ｄ綅	涓偣鐢靛帇	鏈�澶ф。浣�	鏈�灏忔。浣�	姝ラ暱	妗ｄ綅閲忔祴";
+			writer.write(txt + "\r\n");
+			txt = "</TapChangerType::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<PowerTransformer::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	type	Substation	NoLoadLoss	ExcitingCurrent";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	绫诲瀷	鍘傜珯鏍囪瘑	绌鸿浇鎹熻��	绌鸿浇鐢垫祦鐧惧垎姣�";
+			writer.write(txt + "\r\n");
+			for (PowerTransformer  p: PowerTransformerList) {
+				txt = "#	" + (index++) + "    "
+						+ p.getMRID() + "    "
+						+ p.getName() + "    "
+						+ p.getName() + "    "
+						+ p.getType() + "    "
+						+ subsId + "    "
+						+ "null" + "    "
+						+ "null";;
+				writer.write(txt + "\r\n");
+			}
+			txt = "</PowerTransformer::SQ>";
+			writer.write(txt + "\r\n");
+			
+			
+			index = 1;
+			txt = "<TransformerWinding::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@@Num	mRID	name	pathName	WindingType	Substation	PowerTransformer	I_node	BaseVoltage	VoltageLevel	TapChangerType	ratedMVA	ratedkV	loadLoss	leakageImpedence	r	x	r0	x0	P	p_qual	Q	q_qual	D	d_qual";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	缁曠粍绫诲瀷	鍘傜珯鏍囪瘑	鍙樺帇鍣ㄦ爣璇�	鐗╃悊杩炴帴鑺傜偣	鍩哄噯鐢靛帇鏍囪瘑	鐢靛帇绛夌骇鏍囪瘑	鍒嗘帴澶寸被鍨嬫爣璇�	棰濆畾鍔熺巼	棰濆畾鐢靛帇	鐭矾鎹熻��	鐭矾鐢靛帇鐧惧垎姣�	鐢甸樆	鐢垫姉	闆跺簭鐢甸樆	闆跺簭鐢垫姉	鏈夊姛閲忔祴	鏈夊姛璐ㄩ噺鐮�	鏃犲姛閲忔祴	鏃犲姛璐ㄩ噺鐮�	妗ｄ綅閲忔祴	妗ｄ綅璐ㄩ噺鐮�";
+			writer.write(txt + "\r\n");
+			for (PowerTransformer  p: PowerTransformerList) {
+				Map<String,TransformerWinding> tfwMap = (Map<String, TransformerWinding>) p.getTransformerWindingMap();
+				for(String twId:tfwMap.keySet()){
+					TransformerWinding transformerWinding = (TransformerWinding)tfwMap.get(twId);
+					txt = "#	" + (index++) + "    "
+							+ transformerWinding.getMRID() + "    "
+							+ transformerWinding.getName() + "    "
+							+ transformerWinding.getName() + "    "
+							+ transformerWinding.getType() + "    "
+							+ subsId + "    "
+							+ transformerWinding.getPowerTransformer() + "    "
+							+ transformerWinding.getPhysicNodeBegin() + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null" + "    "
+							+ "null";
+					writer.write(txt + "\r\n");
+				}
+			}
+			txt = "</TransformerWinding::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<SynchronousMachine::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	type	I_node	Substation	BaseVoltage	VoltageLevel	RatedMW	maxU	minU	maxQ	minQ	maxP	minP	r	x	r0	x0	AuxRatio	P	p_qual	Q	q_qual";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鍙戠數鏈虹被鍨�	鐗╃悊杩炴帴鑺傜偣	鎵�灞炲巶绔欐爣璇�	鍩哄噯鐢靛帇鏍囪瘑	鎵�灞炵數鍘嬬瓑绾ф爣璇�	棰濆畾鍔熺巼	鏈�澶х數鍘嬮檺鍊�	鏈�灏忕數鍘嬮檺鍊�	鏈�澶ф棤鍔熼檺鍊�	鏈�灏忔棤鍔熼檺鍊�	鏈�澶ф湁鍔熼檺鍊�	鏈�灏忔湁鍔熼檺鍊�	姝ｅ簭鐢甸樆	姝ｅ簭鐢垫姉	闆跺簭鐢甸樆	闆跺簭鐢垫姉	鍘傜敤鐢电巼	鏈夊姛閲忔祴	鏈夊姛璐ㄩ噺鐮�	鏃犲姛閲忔祴	鏃犲姛璐ㄩ噺鐮�";
+			writer.write(txt + "\r\n");
+			txt = "</SynchronousMachine::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<Load::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	Substation	I_node	BaseVoltage	VoltageLevel	P	p_qual	Q	q_qual";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鍘傜珯鏍囪瘑	鐗╃悊杩炴帴鑺傜偣	鍩哄噯鐢靛帇鏍囪瘑	鐢靛帇绛夌骇鏍囪瘑	鏈夊姛閲忔祴	鏈夊姛璐ㄩ噺鐮�	鏃犲姛閲忔祴	鏃犲姛璐ㄩ噺鐮�";
+			writer.write(txt + "\r\n");
+			txt = "</Load::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<ShuntCompensator::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	nomQ	V_rate	I_node	BaseVoltage	VoltageLevel	Substation	Q	q_qual";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	棰濆畾瀹归噺	棰濆畾鐢靛帇	鐗╃悊杩炴帴鑺傜偣	鍩哄噯鐢靛帇鏍囪瘑	鐢靛帇绛夌骇鏍囪瘑	鍘傜珯鏍囪瘑	鏃犲姛閲忔祴	鏃犲姛璐ㄩ噺鐮�";
+			writer.write(txt + "\r\n");
+			txt = "</ShuntCompensator::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<ShuntCompensator::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	r	x	I_node	J_node	BaseVoltage	VoltageLevel	Substation	Pi	Qi	Pj	Qj";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鐢甸樆	鐢垫姉	鐗╃悊杩炴帴鑺傜偣	鐗╃悊杩炴帴鑺傜偣	鍩哄噯鐢靛帇鏍囪瘑	鐢靛帇绛夌骇鏍囪瘑	鍘傜珯鏍囪瘑	I渚ф湁鍔熼噺娴�	I渚ф棤鍔熼噺娴�	J渚ф湁鍔熼噺娴�	I渚ф棤鍔熼噺娴�";
+			writer.write(txt + "\r\n");
+			txt = "</ShuntCompensator::SQ>";
+			writer.write(txt + "\r\n");
+			
+			
+			index = 1;
+			txt = "<RelaySignal::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	Substation	rly_type	BaseVoltage	VoltageLevel";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鍘傜珯鏍囪瘑	淇濇姢绫诲瀷	鍩哄噯鐢靛帇鏍囪瘑	鐢靛帇绛夌骇鏍囪瘑";
+			writer.write(txt + "\r\n");
+			txt = "</RelaySignal::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<EndDevice::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	Substation	term_type	BaseVoltage	VoltageLevel	I_node";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	鍘傜珯鏍囪瘑	缁堢绫诲瀷	鍩哄噯鐢靛帇鏍囪瘑	鐢靛帇绛夌骇鏍囪瘑	鐗╃悊杩炴帴鑺傜偣";
+			writer.write(txt + "\r\n");
+			txt = "</EndDevice::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<ComputeValue::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	Substation";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鍘傜珯鏍囪瘑";
+			writer.write(txt + "\r\n");
+			txt = "</ComputeValue::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<State::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	Substation";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鍘傜珯鏍囪瘑";
+			writer.write(txt + "\r\n");
+			txt = "</State::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<Signal::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	Substation";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鍘傜珯鏍囪瘑";
+			writer.write(txt + "\r\n");
+			txt = "</Signal::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<Measure::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	Substation";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	涓枃鍘熷悕	鍘傜珯鏍囪瘑";
+			writer.write(txt + "\r\n");
+			txt = "</Measure::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<Analog::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	devName	devID	type";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	閲忔祴涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	璁惧绫诲悕	璁惧绫绘爣璇�	閲忔祴绫诲瀷";
+			writer.write(txt + "\r\n");
+			txt = "</Analog::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<Analog::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	devName	devID	type";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	閲忔祴涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	璁惧绫诲悕	璁惧绫绘爣璇�	閲忔祴绫诲瀷";
+			writer.write(txt + "\r\n");
+			txt = "</Analog::SQ>";
+			writer.write(txt + "\r\n");
+			
+			index = 1;
+			txt = "<Discrete::SQ>";
+			writer.write(txt + "\r\n");
+			txt = "@Num	mRID	name	pathName	devName	devID	type";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿	鏍囪瘑	閲忔祴涓枃鍘熷悕	鏍囧噯甯﹁矾寰勫叏鍚�	璁惧绫诲悕璁惧绫绘爣璇�	閲忔祴绫诲瀷";
+			writer.write(txt + "\r\n");
+			txt = "</Discrete::SQ>";
+			writer.write(txt + "\r\n");
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				writer.flush();
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void setSubstationList(){
+		String sql = "SELECT T.SUBS_ID ID,T.SUBS_NAME NAME FROM LOSS_ARCH_EQUIP_SUBS T WHERE T.SUBS_ID IN('"+subsId.replace(",", "','")+"')";
+		List<Map<String, String>> subsList = jdbcDao.queryBySql(sql);
+		for (Map<String, String> map : subsList) {
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			if(name.contains("SQ")){
+				name = name.substring(3);
+			}
+			Substation s = new Substation();
+			s.setMRID(id);
+			s.setName(name);
+			s.setPathName(name);
+			SubstationList.add(s);
+		}
+	}
+
+	/**
+	 * 浠巆im鏂囦欢鑾峰彇涓诲彉淇℃伅
+	 * 
+	 * @return
+	 */
+	public void setTranList() {
+		String transWindSql = "SELECT T.OBJ_ID,T.TW_NAME,T.TRAN_ID,decode(T.TW_TYPE,'01','楂�','02','涓�','03','浣�') TW_TYPE,T1.T_CONN_ID,T1.SUBS_ID SUBID FROM LOSS_ARCH_EQUIP_TRANSWIND T, LOSS_ARCH_TOPO_TERMINAL T1"
+				+ " WHERE T.OBJ_ID = T1.T_DEVICE_ID AND T.TRAN_ID IN(SELECT T.TRAN_ID FROM LOSS_ARCH_EQUIP_TRAN T WHERE T.SUBS_ID IN('"+subsId.replace(",", "','")+"') AND T.TRAN_TYPE='01')";
+		List<Map<String, String>> twList = jdbcDao.queryBySql(transWindSql);
+		Map<String, Map<String, TransformerWinding>> twMap = new HashMap<String, Map<String, TransformerWinding>>();
+		for (Map<String, String> map : twList) {
+			String objId = map.get("OBJ_ID");
+			String twName = map.get("TW_NAME");
+			String id = map.get("TRAN_ID");
+			String type = map.get("TW_TYPE");
+			String connId = map.get("T_CONN_ID");
+			String subId = map.get("SUBID");
+			TransformerWinding tw = new TransformerWinding();
+			tw.setMRID(objId);
+			tw.setName(twName);
+			tw.setPathName(twName);
+			tw.setPowerTransformer(id);
+			tw.setType(type);
+			tw.setPhysicNodeBegin(connId);
+			tw.setSubStation(subId);
+			TransformerWindingList.add(tw);
+			Map<String, TransformerWinding> tranWMap = new HashMap<String, TransformerWinding>();
+			;
+			if (!twMap.containsKey(id)) {
+				tranWMap = new HashMap<String, TransformerWinding>();
+			} else {
+				tranWMap = twMap.get(id);
+
+			}
+			tranWMap.put(type, tw);
+			twMap.put(id, tranWMap);
+		}
+		String sql = "SELECT T.TRAN_ID ID, T.TRAN_NAME  NAME,T.RZXS TYPE,T.SUBS_ID SUBID FROM LOSS_ARCH_EQUIP_TRAN T WHERE T.SUBS_ID IN('"+subsId.replace(",", "','")+"') AND T.TRAN_TYPE='01'";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for (Map<String, String> map : list) {
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			String type = map.get("TYPE");
+			String subId = map.get("SUBID");
+			if(type==null || type.trim().length()==0 || "null".equals(type.trim())){
+				type = "01";
+			}
+			if(Integer.parseInt("01")==Integer.parseInt(type)){//涓ゅ嵎鍙�
+				type = "浜岀粫鍙�";
+			}else if (Integer.parseInt("02")==Integer.parseInt(type)){//涓夊嵎鍙�
+				type = "涓夌粫鍙�";
+			}
+			PowerTransformer po = new PowerTransformer();
+			po.setMRID(id);
+			po.setName(name);
+			po.setPathName(name);
+			po.setType(type);
+			po.getTransformerWindingMap().putAll(twMap.get(id));
+			po.setSubStation(subId);
+			PowerTransformerList.add(po);
+		}
+	}
+
+	/**
+	 * 浠庢暟鎹簱鑾峰彇寮�鍏充俊鎭�
+	 * 
+	 * @return
+	 */
+	public void setBreakerList() {
+		String sql = "SELECT T.SWITCH_ID ID,T.SWITCH_NAME NAME,T.SWITCH_SORT_TYPE TYPE,WM_CONCAT(T1.T_CONN_ID) CONNMSG,T.SUBS_ID SUBID FROM LOSS_ARCH_EQUIP_SWITCH T,LOSS_ARCH_TOPO_TERMINAL T1"
+				+ " WHERE T.SWITCH_ID=T1.T_DEVICE_ID AND T.SUBS_ID IN('"+subsId.replace(",", "','")+"') AND T.SWITCH_SORT_TYPE IN('1205015','1205019')"
+				+ " GROUP BY T.SWITCH_ID,T.SWITCH_NAME,T.SWITCH_SORT_TYPE,T.SUBS_ID";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for (Map<String, String> map : list) {
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			String type = map.get("TYPE");
+			String connMsg = map.get("CONNMSG");
+			String subId = map.get("SUBID");
+			String[] conns = null;
+			if (connMsg != null && connMsg.trim().length() != 0) {
+				conns = connMsg.split(",");
+			}
+			Breaker po = new Breaker();
+			po.setMRID(id);
+			po.setName(name);
+			po.setPathName(name);
+			po.setType(type);
+			po.setPhysicNodeBegin(conns[0]);
+			po.setSubStation(subId);
+			if (conns.length == 2) {
+				po.setPhysicNodeEnd(conns[1]);
+			}
+			BreakerList.add(po);
+		}
+	}
+
+	/**
+	 * 浠庢暟鎹簱鑾峰彇鍒�闂镐俊鎭�
+	 * 
+	 * @return
+	 */
+	public void setDisconnectorList() {
+		String sql = "SELECT T.SWITCH_ID ID,T.SWITCH_NAME NAME,T.SWITCH_SORT_TYPE TYPE,WM_CONCAT(T1.T_CONN_ID) CONNMSG,T.SUBS_ID SUBID FROM LOSS_ARCH_EQUIP_SWITCH T,LOSS_ARCH_TOPO_TERMINAL T1"
+				+ " WHERE T.SWITCH_ID=T1.T_DEVICE_ID AND T.SUBS_ID IN('"+subsId.replace(",", "','")+"') AND T.SWITCH_SORT_TYPE IN('1205016', '1205017')"
+				+ " GROUP BY T.SWITCH_ID,T.SWITCH_NAME,T.SWITCH_SORT_TYPE,T.SUBS_ID";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for (Map<String, String> map : list) {
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			String type = map.get("TYPE");
+			String connMsg = map.get("CONNMSG");
+			String subId = map.get("SUBID");
+			String[] conns = null;
+			if (connMsg != null && connMsg.trim().length() != 0) {
+				conns = connMsg.split(",");
+			}
+			Disconnector po = new Disconnector();
+			po.setMRID(id);
+			po.setName(name);
+			po.setPathName(name);
+			po.setType(type);
+			po.setPhysicNodeBegin(conns[0]);
+			if (conns.length == 2) {
+				po.setPhysicNodeEnd(conns[1]);
+			}
+			po.setSubStation(subId);
+			DisconnectorList.add(po);
+		}
+	}
+
+	/**
+	 * 浠庢暟鎹簱鑾峰彇姣嶇嚎淇℃伅
+	 * 
+	 * @return
+	 */
+	public void setBusList() {
+		String sql = "SELECT T.BUSLINE_ID ID,T.BUSLINE_NAME NAME,T.VOLT_LEVEL,T1.T_CONN_ID CONNMSG,T.SUBS_ID SUBID FROM LOSS_ARCH_EQUIP_BUSLINE T,LOSS_ARCH_TOPO_TERMINAL T1"
+				+ " WHERE T.BUSLINE_ID=T1.T_DEVICE_ID AND T.SUBS_ID IN('"+subsId.replace(",", "','")+"')";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for (Map<String, String> map : list) {
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			String voltLevel = map.get("VOLT_LEVEL");
+			String connMsg = map.get("CONNMSG");
+			String subId = map.get("SUBID");
+			BusbarSection po = new BusbarSection();
+			po.setMRID(id);
+			po.setName(name);
+			po.setPathName(name);
+			po.setVoltageLevel(voltLevel);
+			po.setPhysicNodeBegin(connMsg);
+			po.setSubStation(subId);
+			BusbarSectionlist.add(po);
+		}
+	}
+
+	/**
+	 * 浠庢暟鎹簱鑾峰彇绾胯矾淇℃伅
+	 * 
+	 * @return
+	 */
+	public void setLineList() {
+		String sql = "SELECT T.LINE_ID ID, T.LINE_NAME NAME,T1.T_CONN_ID CONNMSG,T.START_SUBS_ID SUBID FROM LOSS_ARCH_EQUIP_LINE T, LOSS_ARCH_TOPO_TERMINAL T1"
+				+ " WHERE T.LINE_ID = T1.T_DEVICE_ID AND T.START_SUBS_ID IN('"+subsId.replace(",", "','")+"')" +
+				" UNION ALL " +
+				"SELECT T.LINE_ID ID, T.LINE_NAME NAME,T1.T_CONN_ID CONNMSG,T.END_SUBS_ID SUBID FROM LOSS_ARCH_EQUIP_LINE T, LOSS_ARCH_TOPO_TERMINAL T1"
+				+ " WHERE T.LINE_ID = T1.T_DEVICE_ID AND T.END_SUBS_ID IN('"+subsId.replace(",", "','")+"')";
+		
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for (Map<String, String> map : list) {
+			String id = map.get("ID");
+			String name = map.get("NAME");
+			String connMsg = map.get("CONNMSG");
+			String subId = map.get("SUBID");
+			String[] conns = null;
+			if (connMsg != null && connMsg.trim().length() != 0) {
+				conns = connMsg.split(",");
+			}
+			for (int i = 0; i < conns.length; i++) {
+				ACLineDot po = new ACLineDot();
+				if (i == 0) {
+					po.setMRID(id + "1");
+					po.setName(name + "棣栫");
+					po.setPathName(name + "棣栫");
+					po.setPhysicNodeBegin(conns[0]);
+					po.setAclineSegment(id);
+					po.setSubStation(subId);
+					ACLineDotList.add(po);
+				} else {
+					po.setMRID(id + "2");
+					po.setName(name + "鏈");
+					po.setPathName(name + "鏈");
+					po.setPhysicNodeBegin(conns[0]);
+					po.setAclineSegment(id);
+					po.setSubStation(subId);
+					ACLineDotList.add(po);
+				}
+			}
+
+		}
+	}
+}

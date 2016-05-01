@@ -1,0 +1,63 @@
+package com.example.helloworld;
+
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
+import android.view.ContextMenu;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.SubMenu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
+import android.widget.SearchView;
+import android.widget.Toast;
+
+
+public class MainActivity extends FragmentActivity implements ActionBar.OnNavigationListener{
+	ViewPager viewPager;
+	ActionBar actionBar;
+	private static final String SELLECTED_ITEM="selected_item";
+	@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        actionBar=getActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setListNavigationCallbacks(new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,android.R.id.text1,new String[]{"第一页","第二页","第三页" }),this);
+	
+	
+	}
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstaceState){
+		if(savedInstaceState.containsKey(SELLECTED_ITEM)){
+			getActionBar().setSelectedNavigationItem(savedInstaceState.getInt(SELLECTED_ITEM));
+		}
+	}
+	@Override
+	public boolean onNavigationItemSelected(int arg0, long arg1) {
+		// TODO Auto-generated method stub
+		Fragment fragment=new DummyFragment();
+		Bundle args=new Bundle();
+		args.putInt(DummyFragment.ARG_SECTION_NUMBER, position+1);
+		return true;
+	}
+	
+}

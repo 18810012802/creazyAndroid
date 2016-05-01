@@ -1,0 +1,8 @@
+<resources>
+    <string-array name="books">
+       <item>疯狂ajava讲义</item>
+        <item>疯狂bjava讲义</item>
+        <item>疯狂cjava讲义</item>
+        <item>疯狂djava讲义</item>
+    </string-array>
+</resources>

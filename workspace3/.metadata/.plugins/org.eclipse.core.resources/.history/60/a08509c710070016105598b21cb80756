@@ -1,0 +1,126 @@
+package com.example.helloworld;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.Chronometer.OnChronometerTickListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.QuickContactBadge;
+import android.widget.RadioGroup;
+import android.widget.Switch;
+import android.widget.TextView;
+
+
+public class MainActivity extends Activity {
+	
+	int[] images=new int[]{
+			R.drawable.aa,
+			R.drawable.bb,
+			R.drawable.cc,
+			R.drawable.dd,
+			R.drawable.ee
+			
+	};
+	int currentImg=0;
+	private int alpha=255;
+	QuickContactBadge badge;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+       final Button plus=(Button)findViewById(R.id.plus);
+       final Button minus=(Button)findViewById(R.id.minus);
+       final Button next=(Button)findViewById(R.id.next);
+       final ImageView image1=(ImageView)findViewById(R.id.image1);
+       final ImageView image2=(ImageView)findViewById(R.id.image2);
+       badge=(QuickContactBadge)findViewById(R.id.badge);
+       badge.assignContactFromPhone("", false);
+       next.setOnClickListener(new OnClickListener(){
+
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+			image1.setImageResource(images[++currentImg%images.length]);
+		}
+    	  
+      });
+      OnClickListener listener=new OnClickListener(){
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			if(v==plus){
+				alpha+=20;
+			}
+			if(v==minus){
+				alpha-=20;
+			}
+			if(alpha>=255){
+				alpha=255;
+			}
+			if(alpha<=0){
+				alpha=0;
+			}
+			image1.setAlpha(alpha);
+		}
+    	  
+      };
+      plus.setOnClickListener(listener);
+      minus.setOnClickListener(listener);
+      image1.setOnTouchListener(new OnTouchListener(){
+
+		@Override
+		public boolean onTouch(View view, MotionEvent event) {
+			// TODO Auto-generated method stub
+			BitmapDrawable bitmapDrawable=(BitmapDrawable)image1.getDrawable();
+			Bitmap bitmap=bitmapDrawable.getBitmap();
+			double scale=bitmap.getWidth();
+			int x=(int)(event.getX()*scale);
+			int y=(int)(event.getY()*scale);
+			if(x+120>bitmap.getWidth()){
+				x=bitmap.getWidth()-120;
+				
+			}
+			if(y+120>bitmap.getHeight()){
+				y=bitmap.getHeight()-120;
+				
+			}
+			image2.setImageBitmap(Bitmap.createBitmap(bitmap,x,y,120,120));
+			image2.setAlpha(alpha);
+			
+			return false;
+		}
+    	  
+      });
+       
+    }
+
+
+
+}

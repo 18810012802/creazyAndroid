@@ -1,0 +1,5 @@
+package svg.jb.genemap.next.model.protoDevice;
+
+public class Substation extends Device{
+
+}

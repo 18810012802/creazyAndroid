@@ -1,0 +1,8 @@
+package svg.jb.genemap.next.model.protoDevice;
+
+public class Device{
+ private String name;
+ private String MRID;
+ private String type;
+ private 
+}

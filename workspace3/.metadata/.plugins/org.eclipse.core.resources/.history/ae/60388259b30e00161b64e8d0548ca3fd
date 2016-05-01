@@ -1,0 +1,37 @@
+package svg.jb.genemap.next.service;
+
+import java.util.List;
+
+
+public interface IParse {
+
+	/**
+	 * 鑾峰彇涓诲彉淇℃伅
+	 * @return
+	 */
+	public List<PowerTransformer> getTranMap();
+	
+	/**
+	 * 鑾峰彇寮�鍏充俊鎭�
+	 * @return
+	 */
+	public List<Breaker> getBreakerMap();
+	
+	/**
+	 * 鑾峰彇鍒�闂镐俊鎭�
+	 * @return
+	 */
+	public List<Disconnector> getDisconnectorMap();
+	
+	/**
+	 * 鑾峰彇姣嶇嚎淇℃伅
+	 * @return
+	 */
+	public List<BusbarSection> getBusMap();
+	
+	/**
+	 * 鑾峰彇绾胯矾淇℃伅
+	 * @return
+	 */
+	public List<ACLineDot> getLineMap();
+}

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/jnhz/!svn/ver/204/svg%E7%94%9F%E6%88%90%E7%AB%99%E5%86%85%E5%9B%BE%E7%BC%96%E7%A8%8B/code/svgGeneMap/src/com/jb/genemap/next/model
+END
+CimeType.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/jnhz/!svn/ver/239/svg%E7%94%9F%E6%88%90%E7%AB%99%E5%86%85%E5%9B%BE%E7%BC%96%E7%A8%8B/code/svgGeneMap/src/com/jb/genemap/next/model/CimeType.java
+END
+DeviceType.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/jnhz/!svn/ver/155/svg%E7%94%9F%E6%88%90%E7%AB%99%E5%86%85%E5%9B%BE%E7%BC%96%E7%A8%8B/code/svgGeneMap/src/com/jb/genemap/next/model/DeviceType.java
+END
+BusConnType.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/jnhz/!svn/ver/202/svg%E7%94%9F%E6%88%90%E7%AB%99%E5%86%85%E5%9B%BE%E7%BC%96%E7%A8%8B/code/svgGeneMap/src/com/jb/genemap/next/model/BusConnType.java
+END
+ElementType.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/jnhz/!svn/ver/154/svg%E7%94%9F%E6%88%90%E7%AB%99%E5%86%85%E5%9B%BE%E7%BC%96%E7%A8%8B/code/svgGeneMap/src/com/jb/genemap/next/model/ElementType.java
+END
+DataSourceType.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/jnhz/!svn/ver/179/svg%E7%94%9F%E6%88%90%E7%AB%99%E5%86%85%E5%9B%BE%E7%BC%96%E7%A8%8B/code/svgGeneMap/src/com/jb/genemap/next/model/DataSourceType.java
+END
+OrientationType.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/jnhz/!svn/ver/170/svg%E7%94%9F%E6%88%90%E7%AB%99%E5%86%85%E5%9B%BE%E7%BC%96%E7%A8%8B/code/svgGeneMap/src/com/jb/genemap/next/model/OrientationType.java
+END

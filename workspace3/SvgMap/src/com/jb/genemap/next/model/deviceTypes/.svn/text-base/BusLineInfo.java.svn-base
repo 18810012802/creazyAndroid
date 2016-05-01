@@ -1,0 +1,254 @@
+package com.jb.genemap.next.model.deviceTypes;
+
+import com.jb.genemap.next.model.DeviceType;
+import com.jb.genemap.next.model.OrientationType;
+import com.jb.genemap.next.service.DeviceInfoList;
+
+public class BusLineInfo extends DeviceInfo {
+	private String upOrDownForLeftAssisLine;
+	public String getUpOrDownForLeftAssisLine() {
+		return upOrDownForLeftAssisLine;
+	}
+
+	public void setUpOrDownForLeftAssisLine(String upOrDownForLeftAssisLine) {
+		this.upOrDownForLeftAssisLine = upOrDownForLeftAssisLine;
+	}
+	private boolean notFirst;
+	private String position;
+	private double assisHeight;
+	private double assisWidth;
+	private boolean reverse;
+	private boolean doubleConnDistance;
+	
+	private double anotherAssisHeight;
+	public double getAnotherAssisHeight() {
+		return anotherAssisHeight;
+	}
+
+	public void setAnotherAssisHeight(double anotherAssisHeight) {
+		this.anotherAssisHeight = anotherAssisHeight;
+	}
+
+	public boolean isDoubleConnDistance() {
+		return doubleConnDistance;
+	}
+
+	public void setDoubleConnDistance(boolean doubleConnDistance) {
+		this.doubleConnDistance = doubleConnDistance;
+	}
+
+	public boolean isReverse() {
+		return reverse;
+	}
+
+	public void setReverse(boolean reverse) {
+		this.reverse = reverse;
+	}
+
+	public double getAssisWidth() {
+		return assisWidth;
+	}
+
+	public void setAssisWidth(double assisWidth) {
+		this.assisWidth = assisWidth;
+	}
+
+	public double getAssisHeight() {
+		return assisHeight;
+	}
+
+	public void setAssisHeight(double assisHeight) {
+		this.assisHeight = assisHeight;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+
+	public boolean isNotFirst() {
+		return notFirst;
+	}
+
+	public void setNotFirst(boolean notFirst) {
+		this.notFirst = notFirst;
+	}
+
+	public BusLineInfo(){
+		setWidth(320);
+		setHeight(32);
+		setColor("red");
+		setSvgStr(svgStr());
+		setType(DeviceType.BUSLINE);
+	}
+
+	@Override
+	public String svgStr() {
+		String busCode="<path fill='"+getColor()+"' d='M29.039,13h-26c-1.657,0-3,1.343-3,3s1.343,3,3,3h26c1.657,0,3-1.343,3-3S30.696,13,29.039,13z' transform='matrix("+getWidth()/getHeight()+",0,0,1,"+getX()+","+getY()+")' xmlns='http://www.w3.org/2000/svg' />\r\t";
+		String notForFirstLine=
+				//横线
+				"<path fill='#027871' d='M31.16,15H0.839C0.375,15,0,15.536,0,16s0.376,1,0.84,1H31.16c0.463,0,0.84-0.536,0.84-1S31.623,15,31.16,15&#xD;\n" +
+				"z' transform='matrix("+((DeviceInfoList.busAndBusDistance+DeviceInfoList.breakerToBreakerDistance-getHeight()/2)/getHeight())+",0,0,1,"+(getX()-DeviceInfoList.busAndBusDistance-DeviceInfoList.breakerToBreakerDistance+getHeight()/2)+","+(getAssisHeight()-getHeight()/2)+")' xmlns='http://www.w3.org/2000/svg' />"+
+				//竖线
+				"<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+				" transform=\"matrix(1,0,0,"+(getY()-getAssisHeight()+getHeight()/2)/getHeight()+","+(getX()-getHeight()/2)+","+(getAssisHeight())+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n+" +
+				(anotherAssisHeight>0?"<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+						" transform=\"matrix(1,0,0,"+getAnotherAssisHeight()/getHeight()+","+(getX()-DeviceInfoList.busAndBusDistance-DeviceInfoList.breakerToBreakerDistance+getHeight()/2)+","+(getAssisHeight()-getHeight()/2+getAnotherAssisHeight())+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n+":"");
+		if(upOrDownForLeftAssisLine!=null){
+			if(upOrDownForLeftAssisLine.equals("up")){
+				busCode+=
+				
+				//横线
+				"<path fill='#027871' d='M31.16,15H0.839C0.375,15,0,15.536,0,16s0.376,1,0.84,1H31.16c0.463,0,0.84-0.536,0.84-1S31.623,15,31.16,15&#xD;\n" +
+				"z' transform='matrix("+(getStandardDistance()*DeviceInfoList.breakerToBreakerDistance/50)/getStandardDistance()+",0,0,1,"+(getX()-getStandardDistance()*DeviceInfoList.breakerToBreakerDistance/50)+","+(getY())+")' xmlns='http://www.w3.org/2000/svg' />"+
+				//竖线
+				"<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+				" transform=\"matrix(1,0,0,"+(DeviceInfoList.anotherAssisHeight-getStandardDistance()/2)/getHeight()+","+(getX()-getStandardDistance()*DeviceInfoList.breakerToBreakerDistance/50-getStandardDistance()/2)+","+(getY()+getStandardDistance()/2)+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n+"
+				;
+			}else{
+				busCode+=//竖线
+						"<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+						" transform=\"matrix(1,0,0,"+(DeviceInfoList.anotherAssisHeight/4-getStandardDistance()/2)/getHeight()+","+(getX()-getStandardDistance()/2)+","+(getY()+getStandardDistance()/2)+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n+";
+
+			}
+		}
+		
+		if(notFirst&&assisHeight!=0){
+			return busCode+notForFirstLine;
+		}else{
+			return busCode;
+		}
+		
+	}
+	
+	public String svgStrLow() {
+		String doubleConnDistanceStr="";
+		if(doubleConnDistance){
+			doubleConnDistanceStr="<path fill='#027871' d='M31.16,15H0.839C0.375,15,0,15.536,0,16s0.376,1,0.84,1H31.16c0.463,0,0.84-0.536,0.84-1S31.623,15,31.16,15&#xD;"+
+                    "z' transform='matrix("+(DeviceInfoList.breakerToBreakerDistance/50)*getHeight()/getHeight()+",0,0,1,"+((getX()-getHeight()*DeviceInfoList.breakerToBreakerDistance/50))+","+(getY())+")'/>";
+		}
+		double xh=0;
+		double xv=0;
+		double distanceH=0;
+		if(reverse){
+			xv=getX()+DeviceInfoList.maxBreakerNumForAllLow*DeviceInfoList.breakerToBreakerDistance-getHeight()/2;
+			xh=getX()+DeviceInfoList.maxBreakerNumForAllLow*DeviceInfoList.breakerToBreakerDistance;
+			distanceH=getAssisWidth()-(getX()+DeviceInfoList.maxBreakerNumForAllLow*DeviceInfoList.breakerToBreakerDistance)+getHeight()/2;
+		}else{
+			xv=getX()-getHeight()/2;
+			xh=getAssisWidth()+getHeight()/2;
+			distanceH=getX()-getAssisWidth()-getHeight()/2;
+		}
+		String busCode="<path fill='"+getColor()+"' d='M29.039,13h-26c-1.657,0-3,1.343-3,3s1.343,3,3,3h26c1.657,0,3-1.343,3-3S30.696,13,29.039,13z' transform='matrix("+getWidth()/getHeight()+",0,0,1,"+getX()+","+getY()+")' xmlns='http://www.w3.org/2000/svg' />\r\t";
+		
+		if(upOrDownForLeftAssisLine!=null){
+			if(upOrDownForLeftAssisLine.equals("up")){
+				busCode+=
+				
+				//横线
+				"<path fill='#027871' d='M31.16,15H0.839C0.375,15,0,15.536,0,16s0.376,1,0.84,1H31.16c0.463,0,0.84-0.536,0.84-1S31.623,15,31.16,15&#xD;\n" +
+				"z' transform='matrix("+(getStandardDistance()*DeviceInfoList.breakerToBreakerDistance/50)/getStandardDistance()+",0,0,1,"+(getX()-getStandardDistance()*DeviceInfoList.breakerToBreakerDistance/50)+","+(getY())+")' xmlns='http://www.w3.org/2000/svg' />"+
+				//竖线
+				"<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+				" transform=\"matrix(1,0,0,"+(DeviceInfoList.anotherAssisHeight-getStandardDistance()/2)/getHeight()+","+(getX()-getStandardDistance()*DeviceInfoList.breakerToBreakerDistance/50-getStandardDistance()/2)+","+(getY()+getStandardDistance()/2)+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n+"
+				;
+			}else{
+				busCode+=//竖线
+						"<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+						" transform=\"matrix(1,0,0,"+(DeviceInfoList.anotherAssisHeight/4-getStandardDistance()/2)/getHeight()+","+(getX()-getStandardDistance()/2)+","+(getY()+getStandardDistance()/2)+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n+";
+
+			}
+		}
+		String notForFirstLine=
+				//横线
+				"<path fill='#027871' d='M31.16,15H0.839C0.375,15,0,15.536,0,16s0.376,1,0.84,1H31.16c0.463,0,0.84-0.536,0.84-1S31.623,15,31.16,15&#xD;\n" +
+				"z' transform='matrix("+(distanceH/getHeight())+",0,0,1,"+xh+","+(getAssisHeight()+getHeight()/2)+")' xmlns='http://www.w3.org/2000/svg' />"+
+				//竖线
+				"<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+				" transform=\"matrix(1,0,0,"+(getY()-getAssisHeight()-getHeight()/2)/getHeight()+","+xv+","+(getAssisHeight()+getHeight())+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n+"
+				;
+		
+		if(getAnotherAssisHeight()>0){
+			notForFirstLine+="<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+						" transform=\"matrix(1,0,0,"+(getAnotherAssisHeight()/getHeight())+","+getAssisWidth()+","+(getAssisHeight()+getHeight()-getAnotherAssisHeight())+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n+";
+		}
+		
+		if(notFirst&&assisHeight!=0){
+			return busCode+notForFirstLine+doubleConnDistanceStr;
+			
+		}else{
+			return busCode+doubleConnDistanceStr;
+		}
+	}
+	
+	/**
+	 * 连接竖线
+	 * @return
+	 */
+	public DeviceInfo withVLineStr(BusLineInfo deviceInfo,DeviceInfo lastDeviceInfo){
+		String orientation=lastDeviceInfo.getOrientation();
+		if(orientation.equals(OrientationType.NORTH)){
+				//deviceInfo.setY(deviceInfo.getY()-deviceInfo.getHeight()/2);
+		}else{
+				//deviceInfo.setY(deviceInfo.getY()+deviceInfo.getHeight()/2);
+		}
+		double x = lastDeviceInfo.getX();
+		
+		double yTop = deviceInfo.getY();
+		
+		double yBottom = deviceInfo.getY()+deviceInfo.getHeight()/2;
+		
+		String strTop = "<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+				" transform=\"matrix(1,0,0,0.5,"+x+","+yTop+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n";
+		String strBottom = "<path fill=\"#027871\" d=\"M16,0c-0.55,0-1,0.45-1,1v30c0,0.55,0.45,1,1,1s1-0.45,1-1V1C17,0.45,16.55,0,16,0z\"" +
+				" transform=\"matrix(1,0,0,0.5,"+x+","+yBottom+")\" xmlns=\"http://www.w3.org/2000/svg\" />\n";
+			
+		if(orientation!=null){
+			if(orientation.equals(OrientationType.NORTH)){
+				deviceInfo.setSvgStr(deviceInfo.svgStrLow()+strBottom);
+			}else{
+				deviceInfo.setSvgStr(strTop+deviceInfo.svgStrLow());
+			}
+		}
+		return deviceInfo;
+	}
+	
+	public BusLineInfo withBridgeLine(BusLineInfo bi,DeviceInfo bridgeLeft,DeviceInfo bridgeRight){
+		
+		String orien=bi.getPosition();
+		double x=bi.getX();
+		double y=bi.getY();
+		double breakerDistance=bridgeRight.getX()-bridgeLeft.getX();
+		switch(Integer.parseInt(orien)){
+		case 2://leftUp
+			x=bridgeLeft.getX()+bridgeLeft.getWidth()/2;
+			y=bridgeLeft.getY()-bridgeLeft.getHeight()/2;
+			break;
+		case 1://rightUp
+			x=x-100;
+			y=y+80;
+			break;
+		case 4://rightDown
+			x=x-100;
+			y=y-80;
+			break;
+		case 3://leftDwn
+			x=bridgeLeft.getX()+bridgeLeft.getWidth()/2;
+			y=bridgeLeft.getY()+bridgeLeft.getHeight()/2;
+			break;
+		}
+		String bridge="<path fill='#027871' d='M31.16,15H0.839C0.375,15,0,15.536,0,16s0.376,1,0.84,1H31.16c0.463,0,0.84-0.536,0.84-1S31.623,15,31.16,15&#xD;\n" +
+				"z' transform='matrix("+breakerDistance/getHeight()+",0,0,1,"+x+","+y+")' xmlns='http://www.w3.org/2000/svg' />";
+		bi.setSvgStr(bi.getSvgStr()+bridge);
+		return bi;
+	}
+	public String addText(){
+		String names=getName()!=null&&!"null".equals(getName())?getName().replace(getName().substring(0,getName().indexOf("站")+1),"").replace("开关", "").replace("/", ""):"";
+		String text="<text x=\""+0+"\" y=\""+0+"\" stroke=\"0\" transform=\"matrix(1,0,0,1,"+(getX()+getWidth()-60)+","+(getY()+getHeight())+")\" font-size=\"10.0\" font-family=\"黑体\" fill=\"rgb(0,0,0)\">"+names+"</text>";
+		return text;
+	}
+	
+}

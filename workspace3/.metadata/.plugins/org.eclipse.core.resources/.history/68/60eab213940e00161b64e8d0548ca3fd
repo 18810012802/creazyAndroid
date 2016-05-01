@@ -1,0 +1,201 @@
+package svg.jb.genemap.dist.service;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import svg.jb.genemap.dist.model.BranchTranAndPoleCime;
+import svg.jb.genemap.dist.model.DistDeviceInfo;
+import svg.jb.genemap.dist.model.Substation;
+import svg.jb.genemap.dist.model.TranAndPoleCime;
+import svg.jb.genemap.next.service.utils.JdbcDao;
+
+/**
+ * 浠庢暟鎹簱鑾峰彇svg鍥惧舰鎷撴墤淇℃伅绫伙紙涓�涓珯锛�
+ * @author yjl
+ *
+ */
+public class DistDBToCime {
+	private String lineId = "407707999";
+	private JdbcDao jdbcDao = new JdbcDao();
+	List<Substation> sublist = new ArrayList<Substation>();
+	List<TranAndPoleCime> tranAndPoleCimeList = new ArrayList<TranAndPoleCime>();
+	List<BranchTranAndPoleCime> branchTranAndPoleCimeList = new ArrayList<BranchTranAndPoleCime>();
+	//瀛樺偍鎵�鏈夌粯鍥捐澶囩殑淇℃伅
+	List<DistDeviceInfo> svgList=new ArrayList<DistDeviceInfo>();
+	
+	public DistDBToCime(String lineId){
+		this.lineId=lineId;
+		setSubstationInfo();
+		setMainPoleInfo();
+	}
+	
+	public void distLineData2CIME(String fileName, String entityName, String type, String CalTime) {
+	
+		File file = new File(fileName);
+		FileWriter writer = null;
+		int index = 1;//搴忓彿
+		if(!file.getParentFile().exists()){
+			file.getParentFile().mkdirs();
+		}
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+//				System.out.println(fileName + "鏂囨湰鏂囦欢鍒涘缓鎴愬姛");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			// 鎵撳紑涓�涓啓鏂囦欢鍣紝鏋勯�犲嚱鏁颁腑鐨勭浜屼釜鍙傛暟true琛ㄧず浠ヨ拷鍔犲舰寮忓啓鏂囦欢
+			writer = new FileWriter(fileName);
+			// 棰樼洰<!Entity=娉夊窞 type=鐢电綉妯″瀷 time='2014-03-13T02:00:12'!>
+			String txt = "<!Entity=" + entityName + " type=" + type + "   time='" + CalTime + "'!>";
+			writer.write(txt + "\r\n");
+			
+			/**
+			 * 鍘傜珯淇℃伅<Substation::涓婃毊S220绾�></CalParameter::涓婃毊S220绾�>
+			 */
+			index = 1;
+			txt = "<Substation::" + entityName + ">";
+			writer.write(txt + "\r\n");
+			txt = "@Num      substationId          substationName";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿   鍙樼數绔檌d       鍙樼數绔欏悕绉� ";
+			writer.write(txt + "\r\n");
+			txt = "$-    -    -";
+			writer.write(txt + "\r\n");
+			for (Substation  s: sublist) {
+				txt = "# " + (index++) + "    "
+						+ s.getId() + "    "
+						+ s.getName();
+				writer.write(txt + "\r\n");
+			}
+			txt = "</Substation::" + entityName + ">";
+			writer.write(txt + "\r\n");
+			
+			/**
+			 * 涓诲共绾块厤鍙樺拰鏉嗗淇℃伅<TranAndPole::涓婃毊S220绾�></BaseVoltage::涓婃毊S220绾�>
+			 */
+			index = 1;
+//			txt = "//鍩哄噯鐢靛帇";
+//			writer.write(txt + "\r\n");
+			txt = "<TranAndPole::" + entityName + ">";
+			writer.write(txt + "\r\n");
+			txt = "@Num      tranId           tranName           poleId          poleName";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿    閰嶅彉id           閰嶅彉鍚嶇О     鏉嗗id       鏉嗗鍚嶇О";
+			writer.write(txt + "\r\n");
+			txt = "$-    -    -    -    -";
+			writer.write(txt + "\r\n");
+			for (TranAndPoleCime t : tranAndPoleCimeList) {
+				txt = "# " + (index++) + "    "
+						+ t.getTranId() + "    "
+						+ t.getTranName() + "    "
+						+ t.getPoleId() + "    "
+						+ t.getPoleName();
+				writer.write(txt + "\r\n");
+			}
+			txt = "</TranAndPole::" + entityName + ">";
+			writer.write(txt + "\r\n");
+
+			/**
+			 * 鍒嗘敮绾块厤鍙樺拰鏉嗗淇℃伅<BranchTranAndPole::涓婃毊S220绾�></BranchTranAndPole::涓婃毊S220绾�>
+			 */
+			index = 1;
+//			txt = "//鍦板尯";
+//			writer.write(txt + "\r\n");
+			txt = "<BranchTranAndPole::" + entityName + ">";
+			writer.write(txt + "\r\n");
+			txt = "@Num      startPole           tranId                          tranName         poleId         poleName";
+			writer.write(txt + "\r\n");
+			txt = "//搴忓彿    璧风偣鏉嗗id           閰嶅彉id                      閰嶅彉鍚嶇О       鏉嗗id	鏉嗗鍚嶇О";
+			writer.write(txt + "\r\n");
+			txt = "$-    -    -    -    -    -";
+			writer.write(txt + "\r\n");
+			for(BranchTranAndPoleCime bt : branchTranAndPoleCimeList){
+				txt = "# " + (index++) + "    "
+						+ bt.getStartPole() + "    "
+						+ bt.getTranId() + "    "
+						+ bt.getTranName() + "    "
+						+ bt.getPoleId() + "    "
+						+ bt.getPoleName();
+				writer.write(txt + "\r\n");
+			}
+			txt = "</BranchTranAndPole::" + entityName + ">";
+			writer.write(txt + "\r\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			try {
+				writer.flush();
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * 璁剧疆鍘傜珯鍥惧舰淇℃伅
+	 * @return
+	 */
+	public void setSubstationInfo(){
+		List<Substation> result = new ArrayList<Substation>();
+		String sql = "SELECT T.OBJ_ID, T.BDZMC FROM T_SB_ZNYC_DZ T WHERE T.OBJ_ID IN(SELECT QDWZ FROM T_SB_ZWYC_XL WHERE OBJ_ID='"+lineId+"')";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for(Map<String, String> map : list){
+			String id = map.get("OBJ_ID");
+			String name = map.get("BDZMC");
+			Substation s = new Substation();
+			s.setId(id);
+			s.setName(name);
+			sublist.add(s);
+		}
+	}
+	
+	/**
+	 * 鑾峰彇涓诲共绾胯矾涓婃潌濉斾俊鎭�
+	 * @return
+	 */
+	public void setMainPoleInfo(){
+		String sql = "SELECT (SELECT OBJ_ID FROM T_SB_ZWYC_ZSBYQ WHERE SSGT = T.OBJ_ID) TRANID," +
+				"(SELECT SBMC FROM T_SB_ZWYC_ZSBYQ  WHERE SSGT = T.OBJ_ID) TRANNAME,T.OBJ_ID,T.GTBH FROM T_SB_ZWYC_GT T WHERE T.SSXL='"+lineId+"' AND t.SSFDXL IS NULL ORDER BY T.GTPLXH";
+		List<Map<String, String>> list = jdbcDao.queryBySql(sql);
+		for(int i=0;i<list.size();i++){
+			Map<String, String> map = list.get(i);
+			String tranId = map.get("TRANID");
+			String tranName = map.get("TRANNAME");
+			String id = map.get("OBJ_ID");
+			String name = map.get("GTBH");
+			TranAndPoleCime t = new TranAndPoleCime();
+			t.setTranId(tranId);
+			t.setTranName(tranName);
+			t.setPoleId(id);
+			t.setPoleName(name);
+			tranAndPoleCimeList.add(t);
+			String branchPoleSql = "SELECT (SELECT OBJ_ID FROM T_SB_ZWYC_ZSBYQ WHERE SSGT = T.OBJ_ID) TRANID," +
+					" (SELECT SBMC FROM T_SB_ZWYC_ZSBYQ WHERE SSGT = T.OBJ_ID) TRANNAME," +
+					" T.OBJ_ID, T.GTBH FROM T_SB_ZWYC_GT T WHERE T.SSFDXL IN" +
+					" (SELECT T.OBJ_ID FROM T_SB_ZWYC_XL T WHERE T.SSZX = '"+lineId+"' AND T.QDWZ='"+id+"')  ORDER BY T.GTBH";
+			List<Map<String, String>> branchPolelist = jdbcDao.queryBySql(branchPoleSql);
+			for(int j=0;j<branchPolelist.size();j++){
+				Map<String, String> branchPoleMap = branchPolelist.get(j);
+				String branchTranId = branchPoleMap.get("TRANID");
+				String branchTranName = branchPoleMap.get("TRANNAME");
+				String branchPoleId = branchPoleMap.get("OBJ_ID");
+				String branchPoleName = branchPoleMap.get("GTBH");
+				BranchTranAndPoleCime bt = new BranchTranAndPoleCime();
+				bt.setStartPole(id);
+				bt.setTranId(branchTranId);
+				bt.setTranName(branchTranName);
+				bt.setPoleId(branchPoleId);
+				bt.setPoleName(branchPoleName);
+				branchTranAndPoleCimeList.add(bt);
+			}
+		}
+	}	
+}

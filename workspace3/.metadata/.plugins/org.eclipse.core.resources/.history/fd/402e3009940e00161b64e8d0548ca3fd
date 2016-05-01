@@ -1,0 +1,1053 @@
+package svg.jb.genemap.main;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import com.flowCal.device.model.main.ACLineDot;
+import com.flowCal.device.model.main.Breaker;
+import com.flowCal.device.model.main.BusbarSection;
+import com.flowCal.device.model.main.Disconnector;
+import com.flowCal.device.model.main.PowerTransformer;
+import com.flowCal.device.model.main.TransformerWinding;
+
+/**
+ * 鑾峰彇svg鍥惧舰鍙傛暟淇℃伅
+ * 
+ * @author yjl
+ * 
+ */
+public class GetParamMap {
+	public GetParamMap() {
+		ParseCime parseCime = new ParseCime();// 鍒涘缓瑙ｆ瀽cime鏂囦欢鐨勭被
+		this.tranList = parseCime.getTranMap();
+		this.breakerList = parseCime.getBreakerMap();
+		this.disconnectorList = parseCime.getDisconnectorMap();
+		this.busbarSectionList = parseCime.getBusMap();
+		this.lineList = parseCime.getLineMap();
+	}
+
+	private List<DeviceInfo> paramList = new ArrayList<DeviceInfo>();// 璁惧鍥惧舰鍙傛暟闆嗗悎
+	private List<PowerTransformer> tranList = new ArrayList<PowerTransformer>();// cime鏂囦欢涓殑涓诲彉闆嗗悎鏁版嵁淇℃伅
+	private List<Breaker> breakerList = new ArrayList<Breaker>();// cime鏂囦欢涓殑寮�鍏抽泦鍚堟暟鎹俊鎭�
+	private List<Disconnector> disconnectorList = new ArrayList<Disconnector>();// cime鏂囦欢涓殑鍒�闂搁泦鍚堟暟鎹俊鎭�
+	private List<BusbarSection> busbarSectionList = new ArrayList<BusbarSection>();// cime鏂囦欢涓殑姣嶇嚎闆嗗悎鏁版嵁淇℃伅
+	private List<ACLineDot> lineList = new ArrayList<ACLineDot>();// cime鏂囦欢涓殑绾胯矾闆嗗悎鏁版嵁淇℃伅
+	private List<Breaker> tranBreakerList = new ArrayList<Breaker>();// 涓诲彉缁曠粍杩炴帴鐨勫紑鍏抽泦鍚堬紙鍒ゆ柇姣嶇嚎鎵�杩炴帴鐨勫紑鍏崇殑缁樺浘鏂瑰悜锛�
+	private List<Disconnector> tranDisconnectorList = new ArrayList<Disconnector>();// 涓诲彉缁曠粍杩炴帴鐨勫垁闂搁泦鍚堬紙鍒ゆ柇姣嶇嚎鎵�杩炴帴鐨勫垁闂哥殑缁樺浘鏂瑰悜锛�
+
+	private double x = 1000;// 鐢诲竷闀垮害
+
+	private double y = 500;// 鐢诲竷瀹藉害
+
+	private double topBusDistance = 100;// 姣嶇嚎璺濈鐢诲竷涓婃柟璺濈
+
+	private double busAndBusDistance = 2;// 姣嶇嚎涓庢瘝绾块棿鐨勮窛绂�
+
+	private double leftBusDistance = 100;// 姣嶇嚎璺濈鐢诲竷涓婃柟璺濈
+
+	private double connLineLength = 0.5;// 杩炵嚎瀹藉害
+
+	private double connLineLength1 = 20;// 杩炵嚎瀹藉害
+
+	private double connLineThicker = 1;// 杩炵嚎楂樺害`
+
+	private double breakerWidth = 32;// 寮�鍏冲搴�
+
+	private double breakerHeight = 32;// 寮�鍏抽珮搴�
+
+	private double disconnectorWidth = 32;// 鍒�闂稿搴�
+
+	private double disconnectorHeight = 32;// 鍒�闂搁珮搴�
+
+	private double busThicker = 2;// 姣嶇嚎鍘氬害
+
+	private double tranWidth = 32;// 涓诲彉瀹藉害
+
+	private double tranHeight = 32;// 涓诲彉楂樺害
+
+	private double busLineLength = 250;// 姣嶇嚎闀垮害
+	
+	private double lineLength = 4;
+
+	public static int i = 0;
+	
+	public boolean transformFlag= true;
+	
+	public  boolean f = true;//鍥炶皟鍙墽琛屼竴娆＄殑鏍囪瘑
+	
+	public  int flagNum = 0;//鍥炶皟鍙墽琛�2娆＄殑鏍囪瘑
+	
+//	public void
+
+	/**
+	 * 璁剧疆涓诲彉鏁版嵁闆�
+	 */
+	public void setDevMap(DeviceInfo deviceInfo,String connId) {
+
+		List<Breaker> connBreakerList = getBreakerByConnId(connId);// 鑾峰彇杩炴帴姣嶇嚎鐨勬墍鏈夊紑鍏虫暟鎹泦鍚�
+		List<Disconnector> connDisconnectorList = getDisconnectorByConnId(connId);// 鑾峰彇杩炴帴姣嶇嚎鐨勬墍鏈夊紑鍏虫暟鎹泦鍚�
+		List<Map<String, String>> breakerMapList = joinBreakerData(
+				connBreakerList, connDisconnectorList);
+		int breakerCount = 0;
+		int connDisconnectorCount = 0;
+		if (connBreakerList != null && connBreakerList.size() != 0) {
+			breakerCount = connBreakerList.size() - 1;
+		}
+
+		if (connDisconnectorList != null && connDisconnectorList.size() != 0) {
+			connDisconnectorCount = connDisconnectorList.size() - 1;
+		}
+		double breakerX = busLineLength
+				/ (breakerCount + connDisconnectorCount + 2);// 璁＄畻姣嶇嚎涓婃柟鍒�闂搁棿璺濈
+		// int upBreakerFlag = 0;//姣嶇嚎涓婃柟鐨勫紑鍏虫暟閲忚鏁板櫒
+		// int upDisconnectorFlag = 0;//姣嶇嚎涓婃柟鐨勫紑鍏虫暟閲忚鏁板櫒
+		int switchFlag = 0;
+
+		for (int j = 0; j < breakerMapList.size(); j++) {
+			Map<String, String> breakerMap = breakerMapList.get(j);
+			String breakerConnId = GetAnotherNodeStr(breakerMap, connId);
+
+//			if (tranBreakerMapList.contains(breakerMap)) {// 鍒ゆ柇褰撳墠姣嶇嚎鎵�杩炲紑鍏崇殑缁樺浘鏂瑰悜锛堝悜涓嬬粯鍥撅級
+//
+//				x = newX + busLineLength / 2;// 璁剧疆杩炵嚎x鍧愭爣鍊�
+//				y = topBusDistance + connLineLength1;// 璁剧疆y鍧愭爣鍊�
+//				DeviceInfo cLine = addConnectLineParamList(x, y, "hline");
+//				cLine.setDev(deviceInfo);
+//				x = newX + busLineLength / 2;// 璁剧疆x鍧愭爣鍊�
+//				y = y + disconnectorHeight / 2;// 璁剧疆y鍧愭爣鍊� 10杩炵嚎闀垮害
+//				DeviceInfo breakerInfo = addDisconnectorParamList(x, y,
+//						breakerMap.get("name"), breakerMap.get("id"),
+//						breakerMap.get("type"));
+//				breakerInfo.setDev(cLine);
+//
+//				findDeviceByConnIdDown(breakerConnId, breakerInfo);
+//
+//			} else {// 锛堝悜涓婄粯鍥撅級
+				switchFlag++;
+				x = deviceInfo.getX() + breakerX * switchFlag;// 璁剧疆杩炵嚎x鍧愭爣鍊�
+				y = deviceInfo.getY() - connLineLength;// 璁剧疆y鍧愭爣鍊�
+				DeviceInfo cLine = addConnectLineParamList(x, y, "hline");
+				cLine.setDev(deviceInfo);
+				y = y - disconnectorWidth;// 璁剧疆y鍧愭爣鍊� 10杩炵嚎闀垮害
+				DeviceInfo breakerInfo = addBreakerParamList(x, y,
+						breakerMap.get("name"), breakerMap.get("id"),
+						breakerMap.get("type"));
+				breakerInfo.setDev(cLine);
+			   //浠巐ist涓Щ闄ゅ紑鍏虫垨鍒�闂�
+				removeBreak( breakerMap.get("id"),breakerMap.get("type"));
+				// x = newX+breakerX*switchFlag;//璁剧疆杩炵嚎x鍧愭爣鍊�
+				// y = y-breakerHeight/2;//璁剧疆y鍧愭爣鍊�
+				// addConnectLineParamList(x, y);
+
+				findDeviceByConnIdUp(breakerConnId, breakerInfo,deviceInfo);
+//			}
+		}
+		i++;
+		// }
+	}
+	
+	private void removeBreak(String id, String type) {
+		if("breaker".equals(type)){
+			for(Breaker a :breakerList){
+				if(id.equals(a.getMRID())){
+					breakerList.remove(a);
+					break;
+				}
+			}
+		}else{
+			for(Disconnector a :disconnectorList){
+				if(id.equals(a.getMRID())){
+					disconnectorList.remove(a);
+					break;
+				}
+			}
+		}
+	
+}
+
+	public void setDeviceParam(){
+		Map<String,Object> devMap = getDev();//鑾峰彇璧风偣姣嶇嚎
+		DeviceInfo deviceInfo = (DeviceInfo) devMap.get("devInfo");
+		String connId = String.valueOf(devMap.get("connId"));
+		setDevMap(deviceInfo,connId);
+	}
+	
+	/**
+	 * 鑾峰彇绗竴鏉℃瘝绾胯澶囦俊鎭�
+	 * @return
+	 */
+	public Map<String,Object> getDev(){
+		Map<String,Object> result = new HashMap<String, Object>();
+		List<BusbarSection> busList = getStartBusLineList();// 鑾峰彇璧峰楂樺帇渚ф瘝绾挎暟鎹泦鍚堬紙缁樺浘浠ユ涓鸿捣鐐癸級
+		// setTranSwith();//璁剧疆涓诲彉鎵�杩炴帴寮�鍏虫垨鍒�闂搁泦鍚�
+		// int busCount = busList.size();//鑾峰彇姣嶇嚎楂樺帇渚ф牴鏁�
+		// findDeviceByConnId2(busList.get(0));
+		// double length =
+		// (x-leftBusDistance*2-(busCount-1)*busAndBusDistance)/busCount;//鑾峰彇姣嶇嚎闀垮害
+		// for(int i=0;i<busList.size();i++){//寰幆cime鏂囦欢瑙ｆ瀽鐨勬瘝绾挎暟鎹泦
+		BusbarSection busbarSection = null;// 鑾峰彇姣嶇嚎瀵硅薄
+		for(BusbarSection bus : busList){
+			String connId = bus.getPhysicNodeBegin();
+			int connBusCount = 0;
+			List<Breaker> connBreakerList = getBreakerByConnId(connId);// 鑾峰彇杩炴帴姣嶇嚎鐨勬墍鏈夊紑鍏虫暟鎹泦鍚�
+			List<Disconnector> connDisconnectorList = getDisconnectorByConnId(connId);// 鑾峰彇杩炴帴姣嶇嚎鐨勬墍鏈夊紑鍏虫暟鎹泦鍚�
+			List<Map<String, String>> breakerBusMapList = joinBreakerData(
+					connBreakerList, connDisconnectorList);
+			for(Map<String, String> map : breakerBusMapList){
+				String id = map.get("id");
+				String breakerConnId = GetAnotherNodeStr(map, connId);
+				List<BusbarSection> busbarSectionList = getBusByConnId(breakerConnId);
+//					else if(breakerBusMapList.size()==1){//鎵句笉鍒颁换浣曡澶囷紝1鏄細 褰撳墠璁惧
+//					continue;
+//				}else if(breakerBusMapList.size()==2){//鎵惧埌浜嗕笅涓�涓紑鍏�
+				List<Breaker> breakerList = getBreakerByConnId(breakerConnId);
+				List<Disconnector> disconnectorList = getDisconnectorByConnId(breakerConnId);
+				List<Map<String, String>> breakerMapList = joinBreakerData(
+						breakerList, disconnectorList);
+
+				while ((busbarSectionList == null || busbarSectionList.size() == 0)) {
+					if (breakerMapList.size() == 1) {
+						break;
+					} else {
+						for (Map<String, String> bMap : breakerMapList) {
+							String bId = bMap.get("id");
+							if (!id.equals(bId)) {
+								breakerConnId = GetAnotherNodeStr(bMap, breakerConnId);
+								breakerList = getBreakerByConnId(breakerConnId);
+								disconnectorList = getDisconnectorByConnId(breakerConnId);
+								breakerMapList = joinBreakerData(breakerList,
+										disconnectorList);
+								busbarSectionList = getBusByConnId(breakerConnId);
+								id = bId;
+								break;
+							}
+						}
+					}
+
+				}
+				if(busbarSectionList!=null && busbarSectionList.size()!=0){//鎵惧埌姣嶇嚎锛岀粨鏉�
+					connBusCount ++;
+					continue;
+				}
+			}
+			if(connBusCount==1){
+				busbarSection = bus;
+				break;
+			}
+		}
+		double busX = 0;// 璁剧疆x鍧愭爣鍊�
+		double busY = 100;// 璁剧疆y鍧愭爣鍊�
+		DeviceInfo deviceInfo = addBusParamList(busX, busY, busbarSection.getName(),
+				busbarSection.getMRID(), "red", busLineLength);// 澧炲姞姣嶇嚎鍥惧舰鍙傛暟
+		busbarSectionList.remove(busbarSection);
+		String connId = busbarSection.getPhysicNodeBegin();// 鑾峰彇姣嶇嚎鐨勮繛鎺ョ偣淇℃伅
+		result.put("devInfo", deviceInfo);
+		result.put("connId", connId);
+		return result;
+	}
+
+//	public void findDeviceByConnIdDown(String connId, DeviceInfo deviceInfo) {
+//		String type = deviceInfo.getDevType();
+//		Map<String, Object> result = new HashMap<String, Object>();
+//		List<BusbarSection> busbarSectionList = getBusByConnId(connId);
+//
+//		List<Breaker> breakerList = getBreakerByConnId(connId);
+//
+//		List<Disconnector> disconnectorList = getDisconnectorByConnId(connId);
+//
+//		List<Map<String, String>> breakerMapList = joinBreakerData(breakerList,
+//				disconnectorList);
+//
+//		List<ACLineDot> lineList = getLineByConnId(connId);
+//
+//		List<PowerTransformer> powerTransformerList = getTranByConnId(connId);
+//
+//		if (powerTransformerList.size() != 0 && powerTransformerList != null
+//				&& !"tran".equals(deviceInfo.getDevType())||transformFlag==true) {
+//			//鏍规嵁devinfo鎵剧埗鑺傜偣,鍥炴壘list
+//			//鍚戜笅绉诲姩锛屽皢鍙樺帇鍣ㄧ殑list鏁版嵁锛屼互姣嶇嚎涓鸿酱锛屽绉扮Щ鍔紵锛燂紵锛燂紵锛燂紵娉ㄦ剰锛氱珛浣撳浘褰紒
+//			//鎵惧綋鍓嶅彉鍘嬪櫒浣庡帇渚х粫缁勶紙鍙墽琛屼竴娆★級
+//			//鍚戜笅閫掑綊鐢诲浘
+//			
+//			transformFlag =false;
+//			
+//			
+////			PowerTransformer powerTransformer = powerTransformerList.get(0);
+////			double breakX = deviceInfo.getX();
+////			double breakY = deviceInfo.getY();
+////			addConnectLineParamList(breakX, breakY + breakerHeight, "hline");
+////			DeviceInfo dev = addTranParamList(breakX, breakY + breakerHeight
+////					+ connLineLength1, "tran", powerTransformer.getMRID());
+////			String anotherConnId = getTranAnotherConnId(powerTransformer,
+////					connId);
+////			findDeviceByConnIdDown(anotherConnId, dev);
+//
+//		} else if (busbarSectionList != null && busbarSectionList.size() != 0) {
+//			BusbarSection busbarSection = busbarSectionList.get(0);
+//			double busX = deviceInfo.getX();
+//			double busY = deviceInfo.getY();
+//			addConnectLineParamList(busX, busY + breakerHeight, "hline");
+//			DeviceInfo Busdev = addBusParamList(busX, busY + breakerHeight
+//					+ connLineLength1, busbarSection.getName(),
+//					busbarSection.getMRID(), "green", 20);
+//
+//		} else if (breakerMapList != null && breakerMapList.size() != 0) {
+//			String breakerType = breakerMapList.get(0).get("type");
+//			double breakX = deviceInfo.getX();
+//			double breakY = deviceInfo.getY();
+//			int i = 0;// 杩炴帴澶氫釜寮�鍏宠鏁板櫒
+//			Boolean flag = true;
+//			for (Map<String, String> idMap : breakerMapList) {// 鍙湁涓�涓紝鎵�浠ュ彲鐢╞reakX銆乥reakY鐨勫�肩敾绾�
+//				String id = idMap.get("id");
+//				String devId = deviceInfo.getId();
+//
+//				if (!id.equals(deviceInfo.getId()) && devId != null) {// 鎵惧埌璁惧锛屽苟灏�<杩炴帴绾�,璁惧>缁勫悎缁樼敾
+//					if (busbarSectionList == null
+//							|| busbarSectionList.size() == 0) {
+//						if ("tran".equals(deviceInfo.getDevType())) {
+//							double tranBreakerX = breakX + i * 50;
+//							double tranBreakerY = breakY + tranHeight;
+//							addConnectLineParamList(tranBreakerX, tranBreakerY,
+//									"hline");
+//							if (flag == true) {
+//								addConnectLineParamList(tranBreakerX
+//										+ disconnectorWidth / 2,
+//										tranBreakerY - 13, "vline");
+//								flag = false;
+//							}
+//							DeviceInfo tranBreakerInfo = addBreakerParamList(
+//									tranBreakerX, tranBreakerY
+//											+ disconnectorWidth / 2,
+//									idMap.get("name"), idMap.get("id"),
+//									idMap.get("type"));
+//							removeBreak( idMap.get("id"),idMap.get("type"));
+//							String breakerConnId = GetAnotherNodeStr(idMap,
+//									connId);
+//							i++;
+//							findDeviceByConnIdDown(breakerConnId,
+//									tranBreakerInfo);
+//						} else {
+//							String name = deviceInfo.getName();
+//							double lineX = breakX + i * 50;// 璁剧疆杩炵嚎x鍧愭爣鍊�
+//							double lineY = breakY + breakerHeight;// 璁剧疆y鍧愭爣鍊�
+//							addConnectLineParamList(lineX, lineY, "hline");
+//							DeviceInfo breakerInfo = addBreakerParamList(lineX,
+//									lineY + connLineLength1, idMap.get("name"),
+//									idMap.get("id"), idMap.get("type"));
+//							// 缂栧啓杩炴帴鐐瑰嚱鏁�
+//							String breakerConnId = GetAnotherNodeStr(idMap,
+//									connId);
+//							if ("".equals(breakerConnId)) {// 濡傛灉涓嬩竴涓繛鎺ョ偣涓虹┖锛屽綋鍓嶅惊鐜粓姝�
+//								break;
+//							}
+//
+//							findDeviceByConnIdDown(breakerConnId, breakerInfo);
+//
+//						}
+//					} else { //寮�鍏冲彟涓�涓繛鎺ョ偣锛岃繛鎺ュ埌姣嶇嚎涓婏紝姝ゆ椂锛屽垽鏂涓烘瘝鑱�
+//                           //??寰呭啓
+//						//鏍规嵁devinfo鎵剧埗鑺傜偣,鎵惧埌姣嶈仈list
+//						//灏嗘瘝鑱攍ist锛岀Щ鍔ㄥ埌姣嶇嚎鐨勫乏銆佸彸渚с�傦紙鏍规嵁姣嶈仈鏁伴噺鍒ゆ柇锛屽姞涓�娆℃瘝鑱旓紝鍒欐暟閲忓姞1锛�
+//						//鐢昏繛鎺ョ嚎锛屼竴妯紝涓�绔�
+//						//鐢绘瘝绾�
+//						//璋冪敤setDevMap()鍑芥暟锛屽洖璋�
+//					}
+//				}
+//			}
+//		}
+//	}
+
+	/**
+	 * 鑾峰彇璁惧杩炴帴鐐硅繛鎺ョ殑涓嬩竴涓澶�,鍚戜笂
+	 * 
+	 * @param connId
+	 * @return
+	 */
+	public void findDeviceByConnIdUp(String connId, DeviceInfo deviceInfo,DeviceInfo lastBus) {
+		String type = deviceInfo.getDevType();
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<BusbarSection> busbarSectionList = getBusByConnId(connId);
+
+		List<Breaker> breakerList = getBreakerByConnId(connId);
+
+		List<Disconnector> disconnectorList = getDisconnectorByConnId(connId);
+
+		List<Map<String, String>> breakerMapList = joinBreakerData(breakerList,
+				disconnectorList);
+
+		List<ACLineDot> lineList = getLineByConnId(connId);
+
+		List<PowerTransformer> powerTransformerList = getTranByConnId(connId);
+
+		// if(busbarSectionList!=null && busbarSectionList.size()!=0 &&
+		// !type.equals("busline")){//姣嶇嚎閫掑綊娣诲姞鍥惧舰鍙傛暟淇℃伅
+		// // findDeviceByConnId(connId,deviceInfo);
+		// // result.put("busline", busbarSectionList.get(0));}else
+		if (breakerMapList != null && breakerMapList.size() != 0) {// 寮�鍏抽�掑綊娣诲姞鍥惧舰鍙傛暟淇℃伅
+			String breakerType = breakerMapList.get(0).get("type");
+			double breakX = deviceInfo.getX();
+			double breakY = deviceInfo.getY();
+			for (Map<String, String> idMap : breakerMapList) {// 鍙湁涓�涓紝鎵�浠ュ彲鐢╞reakX銆乥reakY鐨勫�肩敾绾�
+	
+				String id = idMap.get("id");
+				String devId = deviceInfo.getId();
+				if (!id.equals(deviceInfo.getId()) && devId != null) {// 鎵惧埌璁惧锛屽苟灏�<杩炴帴绾�,璁惧>缁勫悎缁樼敾
+					if (busbarSectionList == null
+							|| busbarSectionList.size() == 0) {
+						String name = deviceInfo.getName();
+						double lineX = breakX;// 璁剧疆杩炵嚎x鍧愭爣鍊�
+						double lineY = breakY - breakerHeight / 2;// 璁剧疆y鍧愭爣鍊�
+						DeviceInfo cLine = addConnectLineParamList(lineX, lineY, "hline");
+						cLine.setDev(deviceInfo);
+						DeviceInfo breakerInfo = addBreakerParamList(lineX,
+								lineY - disconnectorWidth, idMap.get("name"),
+								idMap.get("id"), idMap.get("type"));
+						breakerInfo.setDev(cLine);
+						removeBreak( idMap.get("id"),idMap.get("type"));
+						// 缂栧啓杩炴帴鐐瑰嚱鏁�
+						String breakerConnId = GetAnotherNodeStr(idMap, connId);
+						if ("".equals(breakerConnId)) {// 濡傛灉涓嬩竴涓繛鎺ョ偣涓虹┖锛屽綋鍓嶅惊鐜粓姝�
+							break;
+						}
+
+						findDeviceByConnIdUp(breakerConnId, breakerInfo,lastBus);
+					}else if(f){
+					//寮�鍏冲彟涓�涓繛鎺ョ偣锛岃繛鎺ュ埌姣嶇嚎涓婏紝姝ゆ椂锛屽垽鏂涓烘瘝鑱�
+                    //??寰呭啓
+					//鏍规嵁devinfo鎵剧埗鑺傜偣,鎵惧埌姣嶈仈list
+						BusbarSection currentBus = busbarSectionList.get(0);
+					List<DeviceInfo> list =new ArrayList<DeviceInfo>();
+					DeviceInfo bus = new DeviceInfo();
+					Map<String,Object> connMap = findConnList(deviceInfo);//淇敼list鍜宐us鐨勫��
+					 list = (List<DeviceInfo>) connMap.get("list");
+					 bus = (DeviceInfo) connMap.get("bus");
+					//灏嗘瘝鑱攍ist锛岀Щ鍔ㄥ埌姣嶇嚎鐨勫乏銆佸彸渚с�傦紙鏍规嵁姣嶈仈鏁伴噺鍒ゆ柇锛屽姞涓�娆℃瘝鑱旓紝鍒欐暟閲忓姞1锛�
+					 if(lastBus.getBusConnCount()==0){
+						 moveBusConnList(list,lastBus,currentBus,"right");
+						 
+					 }else{
+						 moveBusConnList(list,lastBus,currentBus,"left");
+					 }
+					 bus.setBusConnCount(bus.getBusConnCount()+1);
+					f=false;
+				}
+				}
+			}
+			Map<String, String> breakerMap = breakerMapList.get(0);
+
+			// x = newX+length/2;//璁剧疆杩炵嚎x鍧愭爣鍊�
+			// y = topBusDistance+connLineLength1;//璁剧疆y鍧愭爣鍊�
+			// addConnectLineParamList(x, y);
+			// x = newX+length/2;//璁剧疆x鍧愭爣鍊�
+			// y = y+disconnectorHeight/2;//璁剧疆y鍧愭爣鍊� 10杩炵嚎闀垮害
+			// addDisconnectorParamList(x, y, breakerMap.get("name"));
+			//
+			// x = newX+length/2;//璁剧疆杩炵嚎x鍧愭爣鍊�
+			// y = y+connLineLength1+10;//璁剧疆y鍧愭爣鍊�
+			// addConnectLineParamList(x, y);
+
+		} else if (lineList != null && lineList.size() != 0
+				&& !type.equals("hline")) {// 绾胯矾閫掑綊娣诲姞鍥惧舰鍙傛暟淇℃伅
+		// result.put("hline", lineList.get(0));
+			ACLineDot acLine = lineList.get(0);
+			DeviceInfo line = addConnectLineParamList(deviceInfo.getX(), deviceInfo.getY()-lineLength*30, "hline",lineLength);
+			
+			// doub
+
+		} else if (powerTransformerList != null
+				&& powerTransformerList.size() != 0 && !type.equals("tran")) {// 涓诲彉閫掑綊娣诲姞鍥惧舰鍙傛暟淇℃伅
+//			result.put("tran", powerTransformerList.get(0));
+			List<DeviceInfo> list =new ArrayList<DeviceInfo>();
+			DeviceInfo bus = new DeviceInfo();
+			//鏍规嵁devinfo鎵剧埗鑺傜偣,鍥炴壘list
+			 Map<String,Object> connMap = findConnList(deviceInfo);//淇敼list鍜宐us鐨勫��
+			 list = (List<DeviceInfo>) connMap.get("list");
+			 bus = (DeviceInfo) connMap.get("bus");
+			//鍚戜笅绉诲姩锛屽皢鍙樺帇鍣ㄧ殑list鏁版嵁锛屼互姣嶇嚎涓鸿酱锛屽绉扮Щ鍔紵锛燂紵锛燂紵锛燂紵娉ㄦ剰锛氱珛浣撳浘褰紒
+			 moveTransList(list,bus,powerTransformerList.get(0));
+			//鎵惧綋鍓嶅彉鍘嬪櫒浣庡帇渚х粫缁勶紙鍙墽琛屼竴娆★級
+			 
+			//鍚戜笅閫掑綊鐢诲浘
+//			 findDeviceByConnIdUp(breakerConnId, breakerInfo,lastBus); 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+		} else {
+			return;
+		}
+	}
+
+	private void moveTransList(List<DeviceInfo> list,DeviceInfo bus,PowerTransformer powerTransformer) {
+		double lineX =0;
+		double x = 0;
+		double y = bus.getY();
+		double lowY = 0;
+		for(DeviceInfo dev :list){
+			String id = dev.getId();
+			for(DeviceInfo devParam : paramList){
+				String paramId = devParam.getId();
+				if(paramId.equals(id)){
+			
+					if("hline".equals(devParam.getDevType())){
+						double newY = 2*y-devParam.getY()+16;
+						devParam.setY(newY);
+						if(lowY<newY){
+							lowY=newY;
+						}
+						lineX = devParam.getX();
+					}else{
+						double newBreakerY = 2*y-devParam.getY();
+						devParam.setY(newBreakerY);
+						if(lowY<newBreakerY){
+							lowY=newBreakerY;
+						}
+						x = devParam.getX();
+					}
+					break;
+				}
+			}
+		}
+		DeviceInfo  lineDev = addConnectLineParamList(lineX, lowY+disconnectorHeight, "hline");
+		DeviceInfo dev = addTranParamList(x, lowY+disconnectorHeight+connLineLength*30, "tran", powerTransformer.getMRID());
+		
+	// TODO Auto-generated method stub
+	
+	}
+
+	private void moveBusConnList(List<DeviceInfo> list, DeviceInfo bus,BusbarSection currentBus,String flag) {
+		if("right".equals(flag)){
+			double x =bus.getX()+busLineLength;
+			double y = 5500;
+			//鍚戝彸绉诲姩姣嶈仈璁惧
+			for(DeviceInfo dev :list){
+				String id = dev.getId();
+				for(DeviceInfo devParam : paramList){
+					String paramId = devParam.getId();
+					if(paramId.equals(id)){
+						if(y>devParam.getY()){
+							y=devParam.getY();
+						}
+						devParam.setX(x);
+						break;
+					}
+				}
+			}
+			//鐢讳竴娆★紝bus鐨勬瘝鑱旀暟閲忓姞1
+			//娣诲姞鏂规硶锛氳幏鍙栨瘝鑱攍ist涓瓂鍊兼渶灏忕殑璁惧锛屽苟杩斿洖
+			//鐢昏繛绾�
+			addConnectLineParamList(x+breakerWidth/2, y-breakerHeight/2, "vline",busAndBusDistance);//妯嚎,
+			addConnectLineParamList(x+busAndBusDistance*30, y, "hline",(bus.getY()-y)/30);//绔栫嚎       1:30
+			//鐢绘瘝绾�
+			DeviceInfo currBus = addBusParamList(x+busAndBusDistance*30, bus.getY(), currentBus.getName(),
+					currentBus.getMRID(), "red", busLineLength);
+			busbarSectionList.remove(currentBus);
+			//鍥炶皟setDevMap(鍙傛暟褰撳墠鐨勬瘝绾�)
+			setDevMap(currBus,currentBus.getPhysicNodeBegin());
+			
+		}else if("left".equals(flag)){
+			double x =bus.getX();
+			double y = 5500;
+			//鍚戝乏绉诲姩姣嶈仈璁惧
+			for(DeviceInfo dev :list){
+				String id = dev.getId();
+				for(DeviceInfo devParam : paramList){
+					String paramId = devParam.getId();
+					if(paramId.equals(id)){
+						if(y>devParam.getY()){
+							y=devParam.getY();
+						}
+						devParam.setX(x);
+						break;
+					}
+				}
+			}
+			//娣诲姞鏂规硶锛氳幏鍙栨瘝鑱攍ist涓瓂鍊兼渶灏忕殑璁惧锛屽苟杩斿洖
+			addConnectLineParamList(x-busAndBusDistance*30+breakerWidth/2, y-breakerHeight/2, "vline",busAndBusDistance);//妯嚎,
+			addConnectLineParamList(x-busAndBusDistance*30, y, "hline",(bus.getY()-y)/30);//绔栫嚎       1:30
+			//鐢绘瘝绾�
+			DeviceInfo currBus = addBusParamList(x-busLineLength-busAndBusDistance*30, bus.getY(), currentBus.getName(),
+					currentBus.getMRID(), "red", busLineLength);
+			//鍥炶皟setDevMap(鍙傛暟褰撳墠鐨勬瘝绾�)
+			busbarSectionList.remove(currentBus);
+//			setDevMap(currBus,currentBus.getPhysicNodeBegin());
+			
+		}
+		bus.setBusConnCount(bus.getBusConnCount()+1);
+//		double x = bus.getX();
+//		if(bus.)//娣诲姞姣嶈仈鏁伴噺瀛楁锛屽惁鍒欙紝涓嶈兘鍒ゆ柇宸﹀彸
+//		double newX = x+busLineLength-10;
+//		for(int )
+	}
+
+	private Map<String,Object> findConnList(DeviceInfo deviceInfo) {
+		Map<String,Object> result = new HashMap<String, Object>();
+		List<DeviceInfo> list = new ArrayList<DeviceInfo>();
+		while(!("busline").equals(deviceInfo.getDevType())){
+			list.add(deviceInfo);
+			deviceInfo = deviceInfo.getDev();
+		}
+		result.put("list", list);
+		result.put("bus", deviceInfo);
+		return result;
+	}
+
+	/**
+	 * 鑾峰彇姣嶈仈椤哄簭
+	 * 
+	 * @param connId
+	 * @return
+	 */
+	public void findDeviceByConnId2(BusbarSection busbarSection) {
+		String connId = busbarSection.getMRID();
+
+		Map<String, List<BusbarSection>> busSort = new HashMap<String, List<BusbarSection>>();
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<BusbarSection> busbarSectionList = getBusByConnId(connId);
+
+		List<Breaker> breakerList = getBreakerByConnId(connId);
+
+		List<Disconnector> disconnectorList = getDisconnectorByConnId(connId);
+
+		List<Map<String, String>> breakerMapList = joinBreakerData(breakerList,
+				disconnectorList);
+
+		List<ACLineDot> lineList = getLineByConnId(connId);
+
+		List<PowerTransformer> powerTransformerList = getTranByConnId(connId);
+
+		if (busbarSectionList != null && busbarSectionList.size() != 0) {// 姣嶇嚎閫掑綊娣诲姞鍥惧舰鍙傛暟淇℃伅
+		// busSort.put(busbarSection.getMRID(), busbarSectionList.get(0));
+
+		} else if (breakerMapList != null && breakerMapList.size() != 0) {// 寮�鍏抽�掑綊娣诲姞鍥惧舰鍙傛暟淇℃伅\
+
+			for (Map<String, String> idMap : breakerMapList) {// 鍙湁涓�涓紝鎵�浠ュ彲鐢╞reakX銆乥reakY鐨勫�肩敾绾�
+				String id = idMap.get("id");
+				String devId = busbarSection.getMRID();
+				if (!id.equals(devId) && devId != null) {// 鎵惧埌璁惧锛屽苟灏�<杩炴帴绾�,璁惧>缁勫悎缁樼敾
+					if (busbarSectionList == null
+							|| busbarSectionList.size() == 0) {
+
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * 鑾峰彇褰撳墠璁惧鐨勫彟涓�涓繛鎺ョ偣
+	 * 
+	 * @param breakerMap
+	 *            璁惧
+	 * @param connId
+	 *            褰撳墠璁惧涓�渚х殑杩炴帴鐐�
+	 * @return
+	 */
+	public String GetAnotherNodeStr(Map<String, String> breakerMap,
+			String connId) {
+		String breakerConnId = "";
+
+		String sId = breakerMap.get("physicNodeBegin");
+		String eId = breakerMap.get("physicNodeEnd");
+		if ("".equals(connId) || connId == null) {
+			return breakerConnId;
+		}
+		if (!sId.equals(connId)) {// 鏌ユ壘寮�鍏虫墍杩炵殑鍙︿竴涓鐐逛俊鎭�
+			breakerConnId = sId;
+		} else if (!eId.equals(connId)) {
+			breakerConnId = eId;
+		}
+		return breakerConnId;
+	}
+
+	/**
+	 * 鍚堝苟姣嶇嚎杩炴帴鐨勫紑鍏冲拰鍒�闂告暟鎹泦鍚�
+	 * 
+	 * @param connBreakerList
+	 * @param connDisconnectorList
+	 * @return
+	 */
+	public List<Map<String, String>> joinBreakerData(
+			List<Breaker> connBreakerList,
+			List<Disconnector> connDisconnectorList) {
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+		for (Breaker b : connBreakerList) {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("name", b.getName());
+			map.put("id", b.getMRID());
+			map.put("physicNodeBegin", b.getPhysicNodeBegin());
+			map.put("physicNodeEnd", b.getPhysicNodeEnd());
+			map.put("type", "breaker");
+			result.add(map);
+		}
+
+		for (Disconnector d : connDisconnectorList) {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("name", d.getName());
+			map.put("id", d.getMRID());
+			map.put("physicNodeBegin", d.getPhysicNodeBegin());
+			map.put("physicNodeEnd", d.getPhysicNodeEnd());
+			map.put("type", "disconnector");
+			result.add(map);
+		}
+		return result;
+	}
+
+	/**
+	 * 澧炲姞杩炵嚎鍥惧舰鍙傛暟
+	 * 
+	 * @param x
+	 * @param y
+	 * @param name
+	 */
+	public DeviceInfo addConnectLineParamList(double x, double y, String type) {
+		DeviceInfo deviceInfo = new DeviceInfo();// 璁剧疆寮�鍏宠澶囧弬鏁颁俊鎭�
+		deviceInfo.setX(x);
+		deviceInfo.setY(y);
+		deviceInfo.setDevType(type);
+		deviceInfo.setLen(connLineLength);
+		deviceInfo.setThicker(connLineThicker);
+		deviceInfo.setId(String.valueOf(UUID.randomUUID()));
+		paramList.add(deviceInfo);// 澧炲姞寮�鍏冲浘褰㈠弬鏁颁俊鎭�
+		return deviceInfo;
+	}
+	/**
+	 * 澧炲姞杩炵嚎鍥惧舰鍙傛暟
+	 * 
+	 * @param x
+	 * @param y
+	 * @param name
+	 */
+	public DeviceInfo addConnectLineParamList(double x, double y, String type,double len) {
+		DeviceInfo deviceInfo = new DeviceInfo();// 璁剧疆寮�鍏宠澶囧弬鏁颁俊鎭�
+		deviceInfo.setX(x);
+		deviceInfo.setY(y);
+		deviceInfo.setDevType(type);
+		deviceInfo.setLen(len);
+		deviceInfo.setThicker(connLineThicker);
+		deviceInfo.setId(String.valueOf(UUID.randomUUID()));
+		paramList.add(deviceInfo);// 澧炲姞寮�鍏冲浘褰㈠弬鏁颁俊鎭�
+		return deviceInfo;
+	}
+
+	/**
+	 * 澧炲姞绾胯矾鍥惧舰鍙傛暟
+	 * 
+	 * @param x
+	 * @param y
+	 * @param name
+	 */
+	public DeviceInfo addLineParamList(double x, double y, String name,
+			String type) {
+		DeviceInfo deviceInfo = new DeviceInfo();// 璁剧疆寮�鍏宠澶囧弬鏁颁俊鎭�
+		deviceInfo.setX(x);
+		deviceInfo.setY(y);
+		deviceInfo.setDevType(type);
+		deviceInfo.setName(name);
+		deviceInfo.setLen(connLineLength);
+		deviceInfo.setThicker(connLineThicker);
+		paramList.add(deviceInfo);// 澧炲姞寮�鍏冲浘褰㈠弬鏁颁俊鎭�
+		return deviceInfo;
+	}
+
+	/**
+	 * 澧炲姞鍒�闂稿浘褰㈠弬鏁�
+	 * 
+	 * @param x
+	 * @param y
+	 * @param name
+	 */
+	public DeviceInfo addDisconnectorParamList(double x, double y, String name,
+			String id, String type) {
+		DeviceInfo deviceInfo = new DeviceInfo();// 璁剧疆寮�鍏宠澶囧弬鏁颁俊鎭�
+		deviceInfo.setX(x);
+		deviceInfo.setY(y);
+		deviceInfo.setDevType("disconnector");
+		deviceInfo.setName(name);
+		deviceInfo.setId(id);
+		deviceInfo.setWidth(disconnectorWidth);
+		deviceInfo.setHeight(disconnectorHeight);
+		paramList.add(deviceInfo);// 澧炲姞寮�鍏冲浘褰㈠弬鏁颁俊鎭�
+		return deviceInfo;
+	}
+
+	/**
+	 * 澧炲姞姣嶇嚎鍥惧舰鍙傛暟
+	 * 
+	 * @param x
+	 * @param y
+	 * @param name
+	 */
+	public DeviceInfo addBusParamList(double x, double y, String name,
+			String id, String color, double length) {
+		DeviceInfo deviceInfo = new DeviceInfo();// 璁剧疆寮�鍏宠澶囧弬鏁颁俊鎭�
+		deviceInfo.setX(x);
+		deviceInfo.setY(y);
+		deviceInfo.setDevType("busline");
+		deviceInfo.setName(name);
+		deviceInfo.setId(id);
+		deviceInfo.setLen(length);
+		deviceInfo.setThicker(busThicker);
+		deviceInfo.setColor(color);
+		paramList.add(deviceInfo);// 澧炲姞姣嶇嚎鍥惧舰鍙傛暟淇℃伅
+		return deviceInfo;
+	}
+
+	/**
+	 * 澧炲姞寮�鍏冲浘褰㈠弬鏁�
+	 * 
+	 * @param x
+	 * @param y
+	 * @param name
+	 */
+	public DeviceInfo addBreakerParamList(double x, double y, String name,
+			String id, String type) {
+		DeviceInfo deviceInfo = new DeviceInfo();// 璁剧疆寮�鍏宠澶囧弬鏁颁俊鎭�
+		deviceInfo.setX(x);
+		deviceInfo.setY(y);
+		deviceInfo.setDevType(type);
+		deviceInfo.setId(id);
+		deviceInfo.setName(name);
+		deviceInfo.setWidth(breakerWidth);
+		deviceInfo.setHeight(breakerHeight);
+//		deviceInfo.setDev(dev);
+		paramList.add(deviceInfo);// 澧炲姞寮�鍏冲浘褰㈠弬鏁颁俊鎭�
+		return deviceInfo;
+	}
+
+	/**
+	 * 澧炲姞涓诲彉鍥惧舰鍙傛暟
+	 * 
+	 * @param x
+	 * @param y
+	 * @param name
+	 */
+	public DeviceInfo addTranParamList(double x, double y, String name,
+			String id) {
+		DeviceInfo deviceInfo = new DeviceInfo();// 璁剧疆寮�鍏宠澶囧弬鏁颁俊鎭�
+		deviceInfo.setX(x);
+		deviceInfo.setY(y);
+		deviceInfo.setDevType("tran");
+		deviceInfo.setName(name);
+		deviceInfo.setId(id);
+		deviceInfo.setWidth(tranWidth);
+		deviceInfo.setHeight(tranHeight);
+		paramList.add(deviceInfo);// 澧炲姞寮�鍏冲浘褰㈠弬鏁颁俊鎭�
+		return deviceInfo;
+	}
+
+	/**
+	 * 璁剧疆鍙樺帇鍣ㄧ粫缁勯摼鎺ョ殑寮�鍏冲垁闂告暟鎹泦鍚�
+	 * 
+	 * @return
+	 */
+	private void setTranSwith() {
+		for (PowerTransformer powerTransformer : tranList) {
+			Map<String, TransformerWinding> twMap = powerTransformer
+					.getTransformerWindingMap();// 鑾峰彇涓诲彉缁曠粍
+			for (String twType : twMap.keySet()) {
+				TransformerWinding transformerWinding = twMap.get(twType);
+				String connectId = transformerWinding.getPhysicNodeBegin();// 鑾峰彇鍙樺帇鍣ㄧ粫缁勭殑杩炴帴鐐逛俊绯�
+				tranBreakerList.addAll(getBreakerByConnId(connectId));
+				tranDisconnectorList.addAll(getDisconnectorByConnId(connectId));
+			}
+		}
+	}
+
+	private List<BusbarSection> getStartBusLineList() {
+		List<BusbarSection> result = new ArrayList<BusbarSection>();
+		int max = 0;
+		for (BusbarSection busbarSection : busbarSectionList) {
+			int voltLevel = Integer.parseInt(busbarSection.getVoltageLevel());
+			if (max < voltLevel) {
+				max = voltLevel;
+			}
+		}
+		List<BusbarSection> busList = new ArrayList<BusbarSection>();
+		for (BusbarSection busbarSection : busbarSectionList) {
+			int voltLevel = Integer.parseInt(busbarSection.getVoltageLevel());
+			if (max == voltLevel) {
+				result.add(busbarSection);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 鏍规嵁杩炴帴鐐硅幏鍙栬繛鎺ョ殑涓诲彉淇℃伅
+	 * 
+	 * @param connId
+	 * @return
+	 */
+	private List<PowerTransformer> getTranByConnId(String connId) {
+		List<PowerTransformer> result = new ArrayList<PowerTransformer>();
+		for (PowerTransformer powerTransformer : tranList) {
+			Map<String, TransformerWinding> twMap = powerTransformer
+					.getTransformerWindingMap();// 鑾峰彇涓诲彉缁曠粍
+			for (String twType : twMap.keySet()) {
+				TransformerWinding transformerWinding = twMap.get(twType);
+				String connectId = transformerWinding.getPhysicNodeBegin();// 鑾峰彇鍙樺帇鍣ㄧ粫缁勭殑杩炴帴鐐逛俊绯�
+				if (connectId.equals(connId)) {
+					result.add(powerTransformer);
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 鑾峰彇鍙樺帇鍣ㄥ彟涓�渚ц繛鎺ョ偣
+	 */
+	private String getTranAnotherConnId(PowerTransformer powerTransformer,
+			String connId) {
+		Map<String, TransformerWinding> twMap = powerTransformer
+				.getTransformerWindingMap();
+		for (String twType : twMap.keySet()) {
+			if ("浣�".equals(twType)) {
+				TransformerWinding transformerWinding = twMap.get(twType);
+				String id = transformerWinding.getPhysicNodeBegin();
+				return id;
+			}
+		}
+		return null;
+
+	}
+
+	/**
+	 * 鏍规嵁杩炴帴鐐硅幏鍙栬繛鎺ョ殑寮�鍏充俊鎭�
+	 * 
+	 * @param connId
+	 * @return
+	 */
+	private List<Breaker> getBreakerByConnId(String connId) {
+		List<Breaker> result = new ArrayList<Breaker>();
+		for (Breaker breaker : breakerList) {
+			if (connId.equals(breaker.getPhysicNodeBegin())
+					|| connId.equals(breaker.getPhysicNodeEnd())) {
+				result.add(breaker);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 鏍规嵁杩炴帴鐐硅幏鍙栬繛鎺ョ殑鍒�闂镐俊鎭�
+	 * 
+	 * @param connId
+	 * @return
+	 */
+	private List<Disconnector> getDisconnectorByConnId(String connId) {
+		List<Disconnector> result = new ArrayList<Disconnector>();
+		for (Disconnector disconnector : disconnectorList) {
+			if (connId.equals(disconnector.getPhysicNodeBegin())
+					|| connId.equals(disconnector.getPhysicNodeEnd())) {
+				result.add(disconnector);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 鏍规嵁杩炴帴鐐硅幏鍙栬繛鎺ョ殑姣嶇嚎淇℃伅
+	 * 
+	 * @param connId
+	 * @return
+	 */
+	private List<BusbarSection> getBusByConnId(String connId) {
+		List<BusbarSection> result = new ArrayList<BusbarSection>();
+		for (BusbarSection busbarSection : busbarSectionList) {
+			if (connId.equals(busbarSection.getPhysicNodeBegin())) {
+				result.add(busbarSection);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 鏍规嵁杩炴帴鐐硅幏鍙栬繛鎺ョ殑绾胯矾淇℃伅
+	 * 
+	 * @param connId
+	 * @return
+	 */
+	private List<ACLineDot> getLineByConnId(String connId) {
+		List<ACLineDot> result = new ArrayList<ACLineDot>();
+		for (ACLineDot acLineDot : lineList) {
+			if (connId.equals(acLineDot.getPhysicNodeBegin())) {
+				result.add(acLineDot);
+			}
+		}
+		return result;
+	}
+
+	public List<DeviceInfo> getParamList() {
+		return paramList;
+	}
+
+	public void setParamList(List<DeviceInfo> paramList) {
+		this.paramList = paramList;
+	}
+
+	public List<PowerTransformer> getTranList() {
+		return tranList;
+	}
+
+	public void setTranList(List<PowerTransformer> tranList) {
+		this.tranList = tranList;
+	}
+
+	public List<Breaker> getBreakerList() {
+		return breakerList;
+	}
+
+	public void setBreakerList(List<Breaker> breakerList) {
+		this.breakerList = breakerList;
+	}
+
+	public List<Disconnector> getDisconnectorList() {
+		return disconnectorList;
+	}
+
+	public void setDisconnectorList(List<Disconnector> disconnectorList) {
+		this.disconnectorList = disconnectorList;
+	}
+
+	public List<BusbarSection> getBusbarSectionList() {
+		return busbarSectionList;
+	}
+
+	public void setBusbarSectionList(List<BusbarSection> busbarSectionList) {
+		this.busbarSectionList = busbarSectionList;
+	}
+
+	public List<ACLineDot> getLineList() {
+		return lineList;
+	}
+
+	public void setLineList(List<ACLineDot> lineList) {
+		this.lineList = lineList;
+	}
+
+	public List<Breaker> getTranBreakerList() {
+		return tranBreakerList;
+	}
+
+	public void setTranBreakerList(List<Breaker> tranBreakerList) {
+		this.tranBreakerList = tranBreakerList;
+	}
+
+	public List<Disconnector> getTranDisconnectorList() {
+		return tranDisconnectorList;
+	}
+
+	public void setTranDisconnectorList(List<Disconnector> tranDisconnectorList) {
+		this.tranDisconnectorList = tranDisconnectorList;
+	}
+}
