@@ -1,0 +1,9 @@
+package com.example.launcheractivity;
+
+import android.annotation.SuppressLint;
+import android.preference.PreferenceFragment;
+
+
+@SuppressLint("NewApi") public class Prefs1Fragment extends PreferenceFragment {
+	
+}

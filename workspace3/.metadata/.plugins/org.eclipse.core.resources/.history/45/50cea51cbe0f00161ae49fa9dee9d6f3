@@ -1,0 +1,20 @@
+<preference-headers
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <header android:fragment="com.example.launcherractivity.PreferenceActivityTest$Prefs1Fragment"
+        android:icon="@drawable/bb"
+        android:title="程序选项设置"/>
+    <header android:fragment="com.example.launcherractivity.PreferenceActivityTest$Prefs2Fragment"
+        android:icon="@drawable/cc"
+        android:title="界面选项设置"
+        android:summary="设置显示界面的相关选项">
+       <extra android:name="website"
+           android:value="www.crazyit.org"/>
+       </header>
+	<header 
+        android:icon="@drawable/cc"
+        android:title="设置intent">
+        <intent android:action="android.intent.action.VIEW"
+            android:data="http://www.crazyit.org"/>
+        </header>
+    
+</preference-headers>

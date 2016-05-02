@@ -1,0 +1,88 @@
+package com.example.activityforresult;
+
+import android.app.ExpandableListActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListAdapter;
+
+
+public class SelectCityActivity extends ExpandableListActivity {
+	private String[] provinces=new String[]{
+		"广东","广西","湖南"	
+	};
+	private String[][] cities=new String[][]{
+			{"广州","深圳","珠海","中山"},
+			{"桂林","柳州","南宁","北海"},
+			{"长沙","岳阳","衡阳","株洲"}
+	};
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		ExpandableListAdapter adapter=new BaseExpandableListAdapter(){
+
+			@Override
+			public Object getChild(int arg0, int arg1) {
+				// TODO Auto-generated method stub
+				return cities[arg0][arg1];
+			}
+
+			@Override
+			public long getChildId(int arg0, int arg1) {
+				// TODO Auto-generated method stub
+				return arg1;
+			}
+
+			@Override
+			public View getChildView(int arg0, int arg1, boolean arg2,
+					View arg3, ViewGroup arg4) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public int getChildrenCount(int arg0) {
+				// TODO Auto-generated method stub
+				return cities[arg0].length;
+			}
+
+			@Override
+			public Object getGroup(int arg0) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public int getGroupCount() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public long getGroupId(int arg0) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public View getGroupView(int arg0, boolean arg1, View arg2,
+					ViewGroup arg3) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public boolean hasStableIds() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean isChildSelectable(int arg0, int arg1) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+		};
+	}
+}

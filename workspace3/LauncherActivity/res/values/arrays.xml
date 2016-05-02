@@ -1,0 +1,6 @@
+<resources>
+    <string-array name="gender_value_list">
+       <item>男</item>
+        <item>女</item>
+    </string-array>
+</resources>

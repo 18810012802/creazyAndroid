@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <RingtonePreference 
+        android:ringtoneType="all"
+        android:title="设置铃声"
+        android:summary="选择铃声"
+        android:showDefault="true"
+        android:key="ring_key"
+        android:showSilent="true"/>
+
+</PreferenceScreen>

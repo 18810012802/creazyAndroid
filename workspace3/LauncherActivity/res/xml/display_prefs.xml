@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+  <PreferenceCategory android:title="背景灯光组">
+	    <EditTextPreference 
+	        android:key="light"
+	        android:title="灯光强度"
+	        android:summary="填选择灯光强度"
+	        android:dialogTitle="填选择灯光强度"/>
+	    <ListPreference 
+	        android:key="gender"
+	        android:title="性别"
+	        android:summary="选择您的性别"
+	        android:dialogTitle="ListPreference"
+	        android:entries="@array/gender_value_list"/>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="系统功能设置组">
+	    <SwitchPreference 
+	        android:key="autoScroll"
+	        android:title="自动滚屏"
+	        android:summaryOn="自动滚屏：开启"
+	        android:summaryOff="自动滚屏：关闭"
+	        android:defaultValue="true"/>
+	</PreferenceCategory>  
+
+</PreferenceScreen>

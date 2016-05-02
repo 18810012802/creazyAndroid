@@ -1,0 +1,13 @@
+<preference-headers
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <header android:fragment="com.example.launcherractivity.PreferenceActivityTest$Prefs1Fragment"
+        android:icon="@drawable/cc"
+        android:title="程序选项设置"/>
+    <header android:fragment="com.example.launcherractivity.PreferenceActivityTest$Prefs1Fragment"
+        android:icon="@drawable/cc"
+        android:title="程序选项设置"/>
+	<header android:fragment="com.example.launcherractivity.PreferenceActivityTest$Prefs1Fragment"
+        android:icon="@drawable/cc"
+        android:title="程序选项设置"/>
+    
+</preference-headers>

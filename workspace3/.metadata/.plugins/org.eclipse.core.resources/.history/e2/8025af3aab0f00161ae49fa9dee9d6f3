@@ -1,0 +1,108 @@
+package com.example.launcheractivity;
+
+import android.app.ExpandableListActivity;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.LayoutParams;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListAdapter;
+import android.widget.TextView;
+
+public class ExpandableListActivityTest extends ExpandableListActivity{
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		ExpandableListAdapter adapter=new BaseExpandableListAdapter(){
+			int[] logos=new int[]{
+					R.drawable.aa,
+					R.drawable.bb,
+					R.drawable.cc
+					
+			};
+			private String[] armtTypes=new String[]{
+					"神族兵种","虫族兵种","人族兵种"
+			};
+			private String[][] arms=new String[][]{
+					{"狂战士","龙骑士","黑暗圣堂","电兵"},
+					{"小狗","赤蛇","飞龙","自爆飞机"},
+					{"机枪兵","护士MM","幽灵"}
+			};
+			@Override
+			public Object getChild(int arg0, int arg1) {
+				// TODO Auto-generated method stub
+				return arms[arg0][arg1];
+			}
+
+			@Override
+			public long getChildId(int arg0, int arg1) {
+				// TODO Auto-generated method stub
+				return arg1;
+			}
+			
+			private TextView getTextView(){
+				AbsListView.LayoutParams lp=new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,64);
+				TextView textView=new TextView(ExpandableListActivityTest.this);
+				textView.setLayoutParams(lp);
+				textView.setGravity(Gravity.CENTER_VERTICAL|Gravity.LEFT);
+				textView.setPadding(36,0,0,0);
+				textView.setTextSize(20);
+				return textView;
+			}
+			
+			@Override
+			public View getChildView(int arg0, int arg1, boolean arg2,
+					View arg3, ViewGroup arg4) {
+				// TODO Auto-generated method stub
+				TextView textView=getTextView();
+				textView.setText(getChild(arg0,arg1).toString());
+				return textView;
+			}
+
+			@Override
+			public int getChildrenCount(int arg0) {
+				// TODO Auto-generated method stub
+				return arms[arg0].length;
+			}
+
+			@Override
+			public Object getGroup(int arg0) {
+				// TODO Auto-generated method stub
+				return armTypes[arg0];
+			}
+
+			@Override
+			public int getGroupCount() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public long getGroupId(int arg0) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public View getGroupView(int arg0, boolean arg1, View arg2,
+					ViewGroup arg3) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public boolean hasStableIds() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean isChildSelectable(int arg0, int arg1) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+		};
+	}
+}
