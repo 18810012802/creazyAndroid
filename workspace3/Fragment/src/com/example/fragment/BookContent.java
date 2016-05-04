@@ -22,5 +22,12 @@ public class BookContent {
 	}
 	public static List<Book> ITEMS=new ArrayList<Book>();
 	public static Map<Integer,Book> ITEM_MAP=new HashMap<Integer,Book>();
-	
+	static{
+		addItem(new Book(1,"Android从入门到精通","25小时视频讲解"));
+		addItem(new Book(2,"疯狂Android讲义","正在看的"));
+	}
+	private static void addItem(Book book){
+		ITEMS.add(book);
+		ITEM_MAP.put(book.id,book);
+	}
 }
