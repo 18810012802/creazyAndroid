@@ -1,8 +1,0 @@
-package com.example.launcheractivity;
-
-import android.preference.PreferenceFragment;
-
-
-public class Prefs2Fragment extends PreferenceFragment {
-
-}

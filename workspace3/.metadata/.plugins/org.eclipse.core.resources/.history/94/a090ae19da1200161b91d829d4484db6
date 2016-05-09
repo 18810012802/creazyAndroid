@@ -1,0 +1,56 @@
+package com.example.drawable;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
+import android.graphics.drawable.ClipDrawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.os.Build;
+
+public class MainActivity extends ActionBarActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ImageView imageView=(ImageView)findViewById(R.id.image);
+        final ClipDrawable drawable=(ClipDrawable)imageView.getDrawable();
+        final Handler handler=new Handler(){
+        	@Override
+        	public void handleMessage(Message msg){
+        		if(msg.what==0x1233){
+        			drawable.setLevel(drawable.getLevel()+200);
+        			
+        		}
+        	}
+        };
+        final Timer timer=new Timer();
+        timer.schedule(new TimerTask(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Message msg=new Message();
+				msg.what=0x1233;
+				handler.sendMessage(msg);
+				if(drawable.getLevel()>=10000){
+					timer.cancel();
+				}
+			}
+        	
+        }, 0,300);
+    }
+
+
+}

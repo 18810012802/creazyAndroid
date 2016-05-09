@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">CatchBitmap</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="color_red">color_red</string>
+    <string name="color_green">color_green</string>
+    <string name="color_blue">color_blue</string>
+    <string name="width_1">width_1</string>
+    <string name="width_5">width_5</string>
+    <string name="width_3">width_3</string>
+<string name="blur">blur</string>
+    <string name="emboss">emboss</string>
+    
+    
+</resources>

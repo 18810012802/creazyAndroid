@@ -1,7 +1,0 @@
-package com.example.activityforresult;
-
-import ExpandableListActivity;
-
-public class SelectCityActivity extends ExpandableListActivity {
-
-}

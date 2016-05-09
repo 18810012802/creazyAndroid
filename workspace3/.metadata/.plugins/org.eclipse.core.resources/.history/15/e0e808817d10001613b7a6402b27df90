@@ -1,7 +1,0 @@
-package com.example.fragment;
-
-import ListFragment;
-
-public class BookListFragment extends ListFragment {
-
-}

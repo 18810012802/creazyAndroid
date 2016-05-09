@@ -1,0 +1,43 @@
+package com.example.shadertest;
+
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Shader;
+import android.graphics.Shader.TileMode;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.os.Build;
+
+public class MainActivity extends Activity implements OnClickListener{
+	
+	private Shader[] shaders=new Shader[5];
+	private int[] colors;
+	MyView myView;
+	
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        myView=(MyView)findViewById(R.id.my_view);
+        Bitmap bm=BitmapFactory.decodeResource(getResources(), R.drawable.tt);
+        colors=new int[]{Color.RED,Color.GREEN,Color.BLUE};
+        shaders[0]=new BitmapShader(bm,TileMode.REPEAT,TileMode.MIRROR);
+        
+    }
+
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+}

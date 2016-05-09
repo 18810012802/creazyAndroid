@@ -1,0 +1,6 @@
+<clip 
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   android:drawable="@drawable/mm"
+   android:clipOrientation="horizontal"
+   android:gravity="center"
+   />

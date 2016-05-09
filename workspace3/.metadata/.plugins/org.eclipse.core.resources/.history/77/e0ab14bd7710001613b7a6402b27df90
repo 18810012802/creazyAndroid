@@ -1,5 +1,0 @@
-package com.example.fragment;
-
-public class BookDetailFragment extends Fragment{
-
-}

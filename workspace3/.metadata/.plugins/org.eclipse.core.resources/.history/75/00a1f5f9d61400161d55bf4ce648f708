@@ -1,0 +1,50 @@
+package com.example.path;
+
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PathEffect;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.os.Build;
+
+public class MainActivity extends ActionBarActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+    }
+    class MyView extends View{
+    	float phase;
+    	PathEffect[] effets=new PathEffect[7];
+    	int[] colors;
+    	private Paint paint;
+    	Path path;
+    	public MyView(Context context){
+    		super(context);
+    		paint=new Paint();
+    		paint.setStyle(Paint.Style.STROKE);
+    		path=new Path();
+    		path.moveTo(0, 0);
+    		for(int i=1;i<=15;i++){
+    			path.lineTo(i*20, (float)Math.random()*60);
+    			
+    		}
+    		colors=new int[]{
+    				Color.BLACK,Color.BLUE,Color.CYAN,Color.GREEN,Color.MAGENTA,Color.RED,Color.YELLOW};
+    		
+    				
+    		}
+    	}
+    }
+}

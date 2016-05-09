@@ -1,5 +1,0 @@
-package svg.jb.genemap.next.model.protoDevice;
-
-public class Disconnector extends Device{
-
-}

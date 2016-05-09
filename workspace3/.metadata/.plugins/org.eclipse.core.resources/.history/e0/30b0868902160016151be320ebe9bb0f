@@ -1,0 +1,30 @@
+package com.example.shadertest;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+public class MyView extends View{
+	public Paint paint;
+	private Bitmap paint=new Paint();;
+	public MyView(Context context,AttributeSet set){
+		super(context,set);
+		
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setAntiAlias(true);
+		bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.tt);
+
+	}
+	@Override
+	protected void onDraw(Canvas canvas){
+		super.onDraw(canvas);
+		canvas.drawBitmap(bitmap, 0, 0, paint);
+	}
+}

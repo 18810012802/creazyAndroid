@@ -1,0 +1,30 @@
+package com.example.catchbitmap;
+
+import java.text.AttributedCharacterIterator.Attribute;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.view.View;
+
+public class DrawView extends View{
+
+	float preX;
+	float preY;
+	private Path path;
+	public Paint paint;
+	final int VIEW_WIDTH;
+	final int VIEW_HEIGHT;
+	Bitmap cacheBitmap=null;
+	Canvas cacheCanvas=null;
+	public DrawView(Context context,Attribute set) {
+		super(context,set);
+		cacheBitmap=Bitmap.createBitmap(VIEW_WIDTH,VIEW_HEIGHT,Config.ARGB_8888);
+		
+	}
+	
+	
+}

@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/color">
+        <menu>
+          <group android:checkableBehavior="single">
+              <item android:id="@+id/red" android:title="color_red"/>
+              <item android:id="@+id/green" android:title="color_green"/>
+              <item android:id="@+id/blue" android:title="color_blue"/>
+              
+          </group>  
+        </menu>
+       </item>
+        <item android:title="@string/width">
+        <menu>
+          <group>
+              <item android:id="@+id/width_1" android:title="width_1"/>
+              <item android:id="@+id/width_3" android:title="width_3"/>
+              <item android:id="@+id/width_5" android:title="width_5"/>
+              
+          </group>  
+        </menu>
+       </item>
+       <item android:id="@+id/blur" android:title="blur"/>
+       <item android:id="@+id/emboss" android:title="emboss"/>
+</menu>
